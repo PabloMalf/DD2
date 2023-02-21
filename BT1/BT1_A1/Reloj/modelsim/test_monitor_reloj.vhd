@@ -108,18 +108,18 @@ begin
     elsif clk'event and clk = '1' and ena_assert then
       if tic_1s = '1' and info = 0 and info_T1 = 0 and (horas&minutos&segundos) /= 0 and programado = '0' then
         assert (hora_to_natural(hora_T1) + 1) = hora_to_natural(horas&minutos&segundos)
-        report "Error de tipo 1 detectado por el monitor 2"  -- TEXTO PARA SER MOFIFICADO CON UN MENSAJE MAS EXPLICATIVO
+        report "Error: el segundo no se corresponde con el anterior"  -- TEXTO PARA SER MOFIFICADO CON UN MENSAJE MAS EXPLICATIVO
         severity error;
 
       elsif tic_1s = '1' and info = 0 and info_T1 = 0 and programado = '0' then
         assert (hora_T1 = X"115959" and modo = '0') or (hora_T1 = X"235959" and modo = '1')
-        report "Error de tipo 1 detectado por el monitor 2"  -- TEXTO PARA SER MOFIFICADO CON UN MENSAJE MAS EXPLICATIVO
+        report "Error: el modo no se corresponde con la hora actual"  -- TEXTO PARA SER MOFIFICADO CON UN MENSAJE MAS EXPLICATIVO
         severity error;
 
 
       elsif info_T1 /= 0 then
         assert segundos = 0
-        report "Error de tipo 2 detectado por el monitor 2"  -- TEXTO PARA SER MOFIFICADO CON UN MENSAJE MAS EXPLICATIVO
+        report "Error: los segundos avanzan sin estar en el funcionamiento normal"  -- TEXTO PARA SER MOFIFICADO CON UN MENSAJE MAS EXPLICATIVO
         severity error;
 
       end if;
@@ -163,13 +163,13 @@ begin
       if info = 0 and modo = '0' then
         if (horas&minutos&segundos) = 0  then
 
-		  -- SENTENCIA ASSERT PARA SER COMPLETADA
+		  assert  AM_PM/=AM_PM_T1
           report "Error en cambio de AM-PM: no cambia"
           severity error;
 
         else
 
-		  -- SENTENCIA ASSERT PARA SER COMPLETADA
+		  assert AM_PM = AM_PM_T1
           report "Error en AM-PM: cambia cuando no debe"
           severity error;   
 
@@ -178,13 +178,13 @@ begin
       elsif info = 0 and modo = '1' then
         if (horas&minutos& segundos) < X"120000" then
 
-		  -- SENTENCIA ASSERT PARA SER COMPLETADA
+		  assert  AM_PM='0' 
           report "Error en el valor de AM-PM en modo 24 horas"
           severity error;
 
         else
 
-		  -- SENTENCIA ASSERT PARA SER COMPLETADA
+		  assert  AM_PM= '1' 
           report "Error en el valor de AM-PM en modo 24 horas"
           severity error;   
 

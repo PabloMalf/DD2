@@ -82,6 +82,7 @@ package body pack_test_reloj is
 
     end function;
 
+  
   -- Procedimientos de test -----------------------------------------------------------------------------------
 
   -- Parar el reloj cuando se alcanza un valor de hora especificado
@@ -93,7 +94,7 @@ package body pack_test_reloj is
                              constant valor:       in  std_logic_vector(15 downto 0)) is
   begin
   
-	-- CODIGO A COMPLETAR POR EL ESTUDIANTE
+	wait until (AM_PM = periodo and valor = horas&minutos);
 	
   end procedure;
 
@@ -146,7 +147,7 @@ package body pack_test_reloj is
                              signal   clk:       in  std_logic) is
   begin
   
-	-- CODIGO A COMPLETAR POR EL ESTUDIANTE
+	tecleo(ena_cmd, cmd_tecla, clk, X"A");
 
   end procedure;
 

@@ -23,6 +23,9 @@ end entity;
 
 architecture test of test_estimulos_reloj is
 
+signal j: std_logic_vector (7 downto 0);
+signal k: std_logic_vector (7 downto 0);
+
 begin
   -- Tic para el incremento continuo de campo. Escalado. 
   process
@@ -68,14 +71,53 @@ begin
 
 
     -- Esperar a las 11 y 58 AM
-    esperar_hora(horas, minutos, AM_PM, clk, '0', X"11"&X"58");
+
+--- comprobar que funciona las 24 horas en modo 12h
+        esperar_hora(horas, minutos, AM_PM, clk, '0', X"11"&X"58");
+	
+	esperar_hora(horas, minutos, AM_PM, clk, '1', X"11"&X"58");
+	
+	
 	
 	-- Cambio de 12h a 24 horas
 	
 	cambiar_modo_12_24(ena_cmd, cmd_tecla, clk);
+
+--- comprobar que funciona las 24 horas en modo 24h
 	
-	-- Para completar por el estudiante
-    -- ...
+	esperar_hora(horas, minutos, AM_PM, clk, '0', X"11"&X"58");
+	
+	esperar_hora(horas, minutos, AM_PM, clk, '1', X"23"&X"58");
+ 
+-- inicializamos la signal para el bucle
+     j<=X"00";
+     k<=X"00";
+
+     for i in 0 to 11 loop  
+	
+	
+	esperar_hora(horas, minutos, AM_PM, clk, '0', j&X"15");
+        cambiar_modo_12_24(ena_cmd, cmd_tecla, clk);
+        esperar_hora(horas, minutos, AM_PM, clk, '0', j&X"30");
+        cambiar_modo_12_24(ena_cmd, cmd_tecla, clk);
+     j<= j+1;
+   
+  end loop;
+      
+      for i in 0 to 11 loop 
+	
+	esperar_hora(horas, minutos, AM_PM, clk, '0', j&X"15");
+        cambiar_modo_12_24(ena_cmd, cmd_tecla, clk);
+        esperar_hora(horas, minutos, AM_PM, clk, '0', k&X"30");
+        cambiar_modo_12_24(ena_cmd, cmd_tecla, clk);
+      j<= j+1;
+      k<= k+1; 
+
+     end loop;
+	
+	
+	-----------------------------------------------------------------
+  
 
     assert false
     report "done"

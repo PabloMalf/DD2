@@ -8,3 +8,448 @@ z2
 !i10f 100
 cModel Technology
 dC:/altera/16.0
+Ecnt_horas
+Z0 w1676994721
+Z1 DPx4 ieee 15 std_logic_arith 0 22 [G314=:2zXJ`VORJe1J@Z1
+Z2 DPx4 ieee 18 std_logic_unsigned 0 22 ;eZjO2D4ZDz<]0>8AL<ne1
+Z3 DPx3 std 6 textio 0 22 zE1`LPoLg^DX3Oz^4Fj1K3
+Z4 DPx4 ieee 14 std_logic_1164 0 22 eNV`TJ_GofJTzYa?f<@Oe1
+Z5 dC:/Users/marti/Desktop/MacroConjuntos/Universidad/DD2/DD2/BT1/BT1_A1/Reloj
+Z6 8C:/Users/marti/Desktop/MacroConjuntos/Universidad/DD2/DD2/BT1/BT1_A1/Reloj/vhdl/cnt_horas.vhd
+Z7 FC:/Users/marti/Desktop/MacroConjuntos/Universidad/DD2/DD2/BT1/BT1_A1/Reloj/vhdl/cnt_horas.vhd
+l0
+L5
+VgZ09N_BXgFB5beZClimVT0
+!s100 aI8e><ABL=BzoeDnk=bS92
+Z8 OV;C;10.4d;61
+32
+Z9 !s110 1676995069
+!i10b 1
+Z10 !s108 1676995069.000000
+Z11 !s90 -reportprogress|300|-work|work|-2002|-explicit|-stats=none|C:/Users/marti/Desktop/MacroConjuntos/Universidad/DD2/DD2/BT1/BT1_A1/Reloj/vhdl/cnt_horas.vhd|
+Z12 !s107 C:/Users/marti/Desktop/MacroConjuntos/Universidad/DD2/DD2/BT1/BT1_A1/Reloj/vhdl/cnt_horas.vhd|
+!i113 1
+Z13 o-work work -2002 -explicit
+Z14 tExplicit 1
+Artl
+R1
+R2
+R3
+R4
+Z15 DEx4 work 9 cnt_horas 0 22 gZ09N_BXgFB5beZClimVT0
+l32
+L19
+V_eEEM@LHm6O_T=FJa_XFZ3
+!s100 aPkB@:;dh3d8lekb9^NYA1
+R8
+32
+R9
+!i10b 1
+R10
+R11
+R12
+!i113 1
+R13
+R14
+Ecnt_min
+R0
+R1
+R2
+R3
+R4
+R5
+Z16 8C:/Users/marti/Desktop/MacroConjuntos/Universidad/DD2/DD2/BT1/BT1_A1/Reloj/vhdl/cnt_min.vhd
+Z17 FC:/Users/marti/Desktop/MacroConjuntos/Universidad/DD2/DD2/BT1/BT1_A1/Reloj/vhdl/cnt_min.vhd
+l0
+L5
+V]zXWi[8NkAgh4G5^7PYQ@3
+!s100 aHL4EU5hg<zV>=noLWdU>2
+R8
+32
+Z18 !s110 1676995070
+!i10b 1
+Z19 !s108 1676995070.000000
+Z20 !s90 -reportprogress|300|-work|work|-2002|-explicit|-stats=none|C:/Users/marti/Desktop/MacroConjuntos/Universidad/DD2/DD2/BT1/BT1_A1/Reloj/vhdl/cnt_min.vhd|
+Z21 !s107 C:/Users/marti/Desktop/MacroConjuntos/Universidad/DD2/DD2/BT1/BT1_A1/Reloj/vhdl/cnt_min.vhd|
+!i113 1
+R13
+R14
+Artl
+R1
+R2
+R3
+R4
+Z22 DEx4 work 7 cnt_min 0 22 ]zXWi[8NkAgh4G5^7PYQ@3
+l20
+L17
+Veh08dW_o@gST^O7G230W>3
+!s100 iXzQUhjVg=3G>][gEFTHF1
+R8
+32
+R18
+!i10b 1
+R19
+R20
+R21
+!i113 1
+R13
+R14
+Ecnt_reloj
+R0
+R1
+R2
+R3
+R4
+R5
+Z23 8C:/Users/marti/Desktop/MacroConjuntos/Universidad/DD2/DD2/BT1/BT1_A1/Reloj/vhdl/cnt_reloj.vhd
+Z24 FC:/Users/marti/Desktop/MacroConjuntos/Universidad/DD2/DD2/BT1/BT1_A1/Reloj/vhdl/cnt_reloj.vhd
+l0
+L5
+VVb1Vje8ILh9SoE0a[V;iK2
+!s100 76RXSk:YS<>>Yfd3`Pz1J3
+R8
+32
+R18
+!i10b 1
+R19
+Z25 !s90 -reportprogress|300|-work|work|-2002|-explicit|-stats=none|C:/Users/marti/Desktop/MacroConjuntos/Universidad/DD2/DD2/BT1/BT1_A1/Reloj/vhdl/cnt_reloj.vhd|
+Z26 !s107 C:/Users/marti/Desktop/MacroConjuntos/Universidad/DD2/DD2/BT1/BT1_A1/Reloj/vhdl/cnt_reloj.vhd|
+!i113 1
+R13
+R14
+Aestructural
+R15
+R22
+Z27 DEx4 work 7 cnt_seg 0 22 @BOMCPTUeZ`:4gHRK@Bn33
+R1
+R2
+R3
+R4
+Z28 DEx4 work 9 cnt_reloj 0 22 Vb1Vje8ILh9SoE0a[V;iK2
+l26
+L22
+V5Q4]:SLb`k=8`kGPUYV?j1
+!s100 H^k<H=L8?bkmUhV0gbZNK3
+R8
+32
+R18
+!i10b 1
+R19
+R25
+R26
+!i113 1
+R13
+R14
+Ecnt_seg
+R0
+R1
+R2
+R3
+R4
+R5
+Z29 8C:/Users/marti/Desktop/MacroConjuntos/Universidad/DD2/DD2/BT1/BT1_A1/Reloj/vhdl/cnt_seg.vhd
+Z30 FC:/Users/marti/Desktop/MacroConjuntos/Universidad/DD2/DD2/BT1/BT1_A1/Reloj/vhdl/cnt_seg.vhd
+l0
+L5
+V@BOMCPTUeZ`:4gHRK@Bn33
+!s100 <H<dG<kLmzAY7J3?Di<9S0
+R8
+32
+R18
+!i10b 1
+R19
+Z31 !s90 -reportprogress|300|-work|work|-2002|-explicit|-stats=none|C:/Users/marti/Desktop/MacroConjuntos/Universidad/DD2/DD2/BT1/BT1_A1/Reloj/vhdl/cnt_seg.vhd|
+Z32 !s107 C:/Users/marti/Desktop/MacroConjuntos/Universidad/DD2/DD2/BT1/BT1_A1/Reloj/vhdl/cnt_seg.vhd|
+!i113 1
+R13
+R14
+Artl
+R1
+R2
+R3
+R4
+R27
+l18
+L15
+VD1?CbiNnSZ`]D0J]0CdD^0
+!s100 Zk>A@O@^mYb_KDeY1d@FC2
+R8
+32
+R18
+!i10b 1
+R19
+R31
+R32
+!i113 1
+R13
+R14
+Ectrl_reloj
+R0
+R1
+R2
+R3
+R4
+R5
+Z33 8C:/Users/marti/Desktop/MacroConjuntos/Universidad/DD2/DD2/BT1/BT1_A1/Reloj/vhdl/ctrl_reloj.vhd
+Z34 FC:/Users/marti/Desktop/MacroConjuntos/Universidad/DD2/DD2/BT1/BT1_A1/Reloj/vhdl/ctrl_reloj.vhd
+l0
+L5
+V9SQ=z_S?LCJ==A25hh:oF2
+!s100 94:m`kOJoCWd18`UD@h;S1
+R8
+32
+R18
+!i10b 1
+R19
+Z35 !s90 -reportprogress|300|-work|work|-2002|-explicit|-stats=none|C:/Users/marti/Desktop/MacroConjuntos/Universidad/DD2/DD2/BT1/BT1_A1/Reloj/vhdl/ctrl_reloj.vhd|
+Z36 !s107 C:/Users/marti/Desktop/MacroConjuntos/Universidad/DD2/DD2/BT1/BT1_A1/Reloj/vhdl/ctrl_reloj.vhd|
+!i113 1
+R13
+R14
+Artl
+R1
+R2
+R3
+R4
+Z37 DEx4 work 10 ctrl_reloj 0 22 9SQ=z_S?LCJ==A25hh:oF2
+l43
+L23
+V;2<K;>`dAA_8LWRJh[R@z1
+!s100 5DVUjigBo1mKjcYbk``zh3
+R8
+32
+R18
+!i10b 1
+R19
+R35
+R36
+!i113 1
+R13
+R14
+Ppack_test_reloj
+R1
+R2
+R3
+R4
+Z38 w1614687872
+R5
+Z39 8C:/Users/marti/Desktop/MacroConjuntos/Universidad/DD2/DD2/BT1/BT1_A1/Reloj/modelsim/pack_test_reloj.vhd
+Z40 FC:/Users/marti/Desktop/MacroConjuntos/Universidad/DD2/DD2/BT1/BT1_A1/Reloj/modelsim/pack_test_reloj.vhd
+l0
+L5
+V<=dn]O0z8aKzSYk]glN?U1
+!s100 VPEWzGVTWlBQTZVVD43<11
+R8
+32
+b1
+R18
+!i10b 1
+R19
+Z41 !s90 -reportprogress|300|-work|work|-2002|-explicit|-stats=none|C:/Users/marti/Desktop/MacroConjuntos/Universidad/DD2/DD2/BT1/BT1_A1/Reloj/modelsim/pack_test_reloj.vhd|
+Z42 !s107 C:/Users/marti/Desktop/MacroConjuntos/Universidad/DD2/DD2/BT1/BT1_A1/Reloj/modelsim/pack_test_reloj.vhd|
+!i113 1
+R13
+R14
+Bbody
+Z43 DPx4 work 15 pack_test_reloj 0 22 <=dn]O0z8aKzSYk]glN?U1
+R1
+R2
+R3
+R4
+l0
+L68
+Vh:FRdlCH5eN=oOK5O]UWi2
+!s100 M<CQ9=OQFQBha:Ln0Fi_z0
+R8
+32
+R18
+!i10b 1
+R19
+R41
+R42
+!i113 1
+R13
+R14
+Ereloj
+R0
+R1
+R2
+R3
+R4
+R5
+Z44 8C:/Users/marti/Desktop/MacroConjuntos/Universidad/DD2/DD2/BT1/BT1_A1/Reloj/vhdl/reloj.vhd
+Z45 FC:/Users/marti/Desktop/MacroConjuntos/Universidad/DD2/DD2/BT1/BT1_A1/Reloj/vhdl/reloj.vhd
+l0
+L5
+V;FUGaHmTd7B2PmQIP`S[m0
+!s100 ;3c`LK7ZkEUQ;S[S62FB>2
+R8
+32
+R9
+!i10b 1
+R10
+Z46 !s90 -reportprogress|300|-work|work|-2002|-explicit|-stats=none|C:/Users/marti/Desktop/MacroConjuntos/Universidad/DD2/DD2/BT1/BT1_A1/Reloj/vhdl/reloj.vhd|
+Z47 !s107 C:/Users/marti/Desktop/MacroConjuntos/Universidad/DD2/DD2/BT1/BT1_A1/Reloj/vhdl/reloj.vhd|
+!i113 1
+R13
+R14
+Aestructural
+R28
+R37
+R1
+R2
+R3
+R4
+Z48 DEx4 work 5 reloj 0 22 ;FUGaHmTd7B2PmQIP`S[m0
+l29
+L22
+V^Ph6TL>BKB]^:jeMaTR`Q0
+!s100 =2^z:`D`1<kFjL?OzX_RZ2
+R8
+32
+R9
+!i10b 1
+R10
+R46
+R47
+!i113 1
+R13
+R14
+Etest_estimulos_reloj
+R38
+R43
+R1
+R2
+R3
+R4
+R5
+Z49 8C:/Users/marti/Desktop/MacroConjuntos/Universidad/DD2/DD2/BT1/BT1_A1/Reloj/modelsim/test_estimulos_reloj.vhd
+Z50 FC:/Users/marti/Desktop/MacroConjuntos/Universidad/DD2/DD2/BT1/BT1_A1/Reloj/modelsim/test_estimulos_reloj.vhd
+l0
+L7
+V?nMN2bb2DXRNi0Bl]3o7h0
+!s100 _^@5<Pj14_AK1YO;eHzdS3
+R8
+32
+R18
+!i10b 1
+R19
+Z51 !s90 -reportprogress|300|-work|work|-2002|-explicit|-stats=none|C:/Users/marti/Desktop/MacroConjuntos/Universidad/DD2/DD2/BT1/BT1_A1/Reloj/modelsim/test_estimulos_reloj.vhd|
+Z52 !s107 C:/Users/marti/Desktop/MacroConjuntos/Universidad/DD2/DD2/BT1/BT1_A1/Reloj/modelsim/test_estimulos_reloj.vhd|
+!i113 1
+R13
+R14
+Atest
+R43
+R1
+R2
+R3
+R4
+Z53 DEx4 work 20 test_estimulos_reloj 0 22 ?nMN2bb2DXRNi0Bl]3o7h0
+l26
+L24
+V^^FiFZYF?2JKbn>1cUa@E0
+!s100 5=:8>3OKemI5X<0f[XTAA2
+R8
+32
+R18
+!i10b 1
+R19
+R51
+R52
+!i113 1
+R13
+R14
+Etest_monitor_reloj
+Z54 w1614687756
+R43
+R1
+R2
+R3
+R4
+R5
+Z55 8C:/Users/marti/Desktop/MacroConjuntos/Universidad/DD2/DD2/BT1/BT1_A1/Reloj/modelsim/test_monitor_reloj.vhd
+Z56 FC:/Users/marti/Desktop/MacroConjuntos/Universidad/DD2/DD2/BT1/BT1_A1/Reloj/modelsim/test_monitor_reloj.vhd
+l0
+L7
+VT77AY2;KKe[nMmj3^hD@43
+!s100 O^]AL_gmU>gRKKK:>5FiN2
+R8
+32
+R18
+!i10b 1
+R19
+Z57 !s90 -reportprogress|300|-work|work|-2002|-explicit|-stats=none|C:/Users/marti/Desktop/MacroConjuntos/Universidad/DD2/DD2/BT1/BT1_A1/Reloj/modelsim/test_monitor_reloj.vhd|
+Z58 !s107 C:/Users/marti/Desktop/MacroConjuntos/Universidad/DD2/DD2/BT1/BT1_A1/Reloj/modelsim/test_monitor_reloj.vhd|
+!i113 1
+R13
+R14
+Atest
+R43
+R1
+R2
+R3
+R4
+Z59 DEx4 work 18 test_monitor_reloj 0 22 T77AY2;KKe[nMmj3^hD@43
+l26
+L24
+VbDDd:V^I=ChQDLF<z1=<o2
+!s100 I[4kmEZla^Fz2db<H3cFJ0
+R8
+32
+R18
+!i10b 1
+R19
+R57
+R58
+!i113 1
+R13
+R14
+Etest_reloj
+R38
+R43
+R1
+R2
+R3
+R4
+R5
+Z60 8C:/Users/marti/Desktop/MacroConjuntos/Universidad/DD2/DD2/BT1/BT1_A1/Reloj/modelsim/test_reloj.vhd
+Z61 FC:/Users/marti/Desktop/MacroConjuntos/Universidad/DD2/DD2/BT1/BT1_A1/Reloj/modelsim/test_reloj.vhd
+l0
+L7
+VG^nWI0iVzIm;]Td8]GXcf1
+!s100 Mnj]8jAL<FF]:Ci9`7iWD1
+R8
+32
+R18
+!i10b 1
+R19
+Z62 !s90 -reportprogress|300|-work|work|-2002|-explicit|-stats=none|C:/Users/marti/Desktop/MacroConjuntos/Universidad/DD2/DD2/BT1/BT1_A1/Reloj/modelsim/test_reloj.vhd|
+Z63 !s107 C:/Users/marti/Desktop/MacroConjuntos/Universidad/DD2/DD2/BT1/BT1_A1/Reloj/modelsim/test_reloj.vhd|
+!i113 1
+R13
+R14
+Atest
+R59
+R53
+R48
+R43
+R1
+R2
+R3
+R4
+Z64 DEx4 work 10 test_reloj 0 22 G^nWI0iVzIm;]Td8]GXcf1
+l28
+L10
+Z65 Vk^z7e:=zzH>jM[lF@W9Q21
+Z66 !s100 e5I8^YBJ:F5?LNCl5_kTd1
+R8
+32
+R18
+!i10b 1
+R19
+R62
+R63
+!i113 1
+R13
+R14

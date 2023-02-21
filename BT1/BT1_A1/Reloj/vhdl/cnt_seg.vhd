@@ -19,7 +19,7 @@ begin
   process(clk, nRst)    -- Unidades de segundos
   begin
     if nRst = '0' then
-      seg(3 downto 0) <= (others => '0');
+      seg(3 downto 0) <= (others => '0'); -- inicializacion a 0 , de 0 a 9
 
     elsif clk'event and clk = '1' then
       if nrst_ena = '0' then
