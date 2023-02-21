@@ -31,7 +31,7 @@ architecture rtl of cnt_horas is
 
 begin
 
-  -- Control señal de modo
+  -- Control seÃ±al de modo
   process(clk, nRst)   
   begin
     if nRst = '0' then
@@ -45,7 +45,7 @@ begin
     end if;
   end process;
 
-  -- Control señal AM/PM
+  -- Control seÃ±al AM/PM
   process(clk, nRst)   
   begin
     if nRst = '0' then
@@ -110,8 +110,12 @@ begin
         if horas(3 downto 0) = 9 then
           horas(3 downto 0) <= "0000";
 
-        elsif (modo = '0' and horas = X"11") or (modo = '1' and horas = X"23") then
-          horas(3 downto 0) <= "0000";
+        elsif (modo = '0' and horas = X"12")then
+		horas(3 downto 0) <= "0001";
+		
+		
+		elsif (modo = '1' and horas = X"23") then
+          horas( 3 downto 0) <= "0000";
 
         else
           horas(3 downto 0) <= horas(3 downto 0) + 1;
@@ -122,7 +126,7 @@ begin
   end process;
   
   ena_decenas_horas <= ena or inc_campo when horas(3 downto 0) = 9        else
-                       ena or inc_campo when horas > X"23"                else
+                       ena or inc_campo when horas >= X"23"                else
                        ena or inc_campo when horas > X"11" and modo = '0' else
                        '0';
 
@@ -145,8 +149,9 @@ begin
           horas(7 downto 4) <= dato_in(7 downto 4);	
 
       elsif ena_decenas_horas = '1' then
-        if (modo = '0' and horas(7 downto 4) = X"1") or (horas(7 downto 4) = X"2") then
-          horas(7 downto 4) <= "0000";
+	  
+        if (modo = '0' and horas(7 downto 4) = X"1") or ( horas(7 downto 4) = X"2") then 
+		horas(7 downto 4) <= "0000";
 
         else
           horas(7 downto 4) <= horas(7 downto 4) + 1;
@@ -156,3 +161,4 @@ begin
     end if;
   end process;
 end rtl;
+
