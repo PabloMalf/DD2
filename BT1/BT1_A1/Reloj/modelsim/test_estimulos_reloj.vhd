@@ -73,11 +73,11 @@ begin
     -- Esperar a las 11 y 58 AM
 
 --- comprobar que funciona las 24 horas en modo 12h
-        esperar_hora(horas, minutos, AM_PM, clk, '0', X"11"&X"58");
+    esperar_hora(horas, minutos, AM_PM, clk, '0', X"12"&X"02");
 	
-	esperar_hora(horas, minutos, AM_PM, clk, '1', X"11"&X"58");
+	esperar_hora(horas, minutos, AM_PM, clk, '0', X"12"&X"01");
 	
-	
+	report " ///////////////////////////// HE HECHO EL MODO 12H ////////////////////////////////";
 	
 	-- Cambio de 12h a 24 horas
 	
@@ -85,9 +85,11 @@ begin
 
 --- comprobar que funciona las 24 horas en modo 24h
 	
-	esperar_hora(horas, minutos, AM_PM, clk, '0', X"11"&X"58");
+	esperar_hora(horas, minutos, AM_PM, clk, '0', X"00"&X"05");
 	
-	esperar_hora(horas, minutos, AM_PM, clk, '1', X"23"&X"58");
+	esperar_hora(horas, minutos, AM_PM, clk, '0', X"00"&X"04");
+	
+	report " ///////////////////////////// HE HECHO EL MODO 24H ////////////////////////////////";
  
 -- inicializamos la signal para el bucle
      j<=X"00";
