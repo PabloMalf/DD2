@@ -1,4 +1,18 @@
-C:/Users/marti/Desktop/MacroConjuntos/Universidad/DD2/DD2/BT1/BT1_A1/Reloj/vhdl/cnt_seg.vhd {1 {vcom -work work -2002 -explicit -stats=none C:/Users/marti/Desktop/MacroConjuntos/Universidad/DD2/DD2/BT1/BT1_A1/Reloj/vhdl/cnt_seg.vhd
+C:/Users/marti/Desktop/MacroConjuntos/Universidad/DD2/DD2/BT1/BT1_A1/Reloj/modelsim/test_reloj.vhd {1 {vcom -work work -2002 -explicit -stats=none C:/Users/marti/Desktop/MacroConjuntos/Universidad/DD2/DD2/BT1/BT1_A1/Reloj/modelsim/test_reloj.vhd
+Model Technology ModelSim ALTERA vcom 10.4d Compiler 2015.12 Dec 30 2015
+-- Loading package STANDARD
+-- Loading package TEXTIO
+-- Loading package std_logic_1164
+-- Loading package std_logic_arith
+-- Loading package STD_LOGIC_UNSIGNED
+-- Loading package pack_test_reloj
+-- Compiling entity test_reloj
+-- Compiling architecture test of test_reloj
+-- Loading entity reloj
+-- Loading entity test_estimulos_reloj
+-- Loading entity test_monitor_reloj
+
+} {} {}} C:/Users/marti/Desktop/MacroConjuntos/Universidad/DD2/DD2/BT1/BT1_A1/Reloj/vhdl/cnt_seg.vhd {1 {vcom -work work -2002 -explicit -stats=none C:/Users/marti/Desktop/MacroConjuntos/Universidad/DD2/DD2/BT1/BT1_A1/Reloj/vhdl/cnt_seg.vhd
 Model Technology ModelSim ALTERA vcom 10.4d Compiler 2015.12 Dec 30 2015
 -- Loading package STANDARD
 -- Loading package TEXTIO
@@ -53,14 +67,15 @@ Model Technology ModelSim ALTERA vcom 10.4d Compiler 2015.12 Dec 30 2015
 -- Loading entity ctrl_reloj
 -- Loading entity cnt_reloj
 
-} {} {}} C:/Users/marti/Desktop/MacroConjuntos/Universidad/DD2/DD2/BT1/BT1_A1/Reloj/vhdl/cnt_horas.vhd {1 {vcom -work work -2002 -explicit -stats=none C:/Users/marti/Desktop/MacroConjuntos/Universidad/DD2/DD2/BT1/BT1_A1/Reloj/vhdl/cnt_horas.vhd
+} {} {}} C:/Users/marti/Desktop/MacroConjuntos/Universidad/DD2/DD2/BT1/BT1_A1/Reloj/modelsim/pack_test_reloj.vhd {1 {vcom -work work -2002 -explicit -stats=none C:/Users/marti/Desktop/MacroConjuntos/Universidad/DD2/DD2/BT1/BT1_A1/Reloj/modelsim/pack_test_reloj.vhd
 Model Technology ModelSim ALTERA vcom 10.4d Compiler 2015.12 Dec 30 2015
 -- Loading package STANDARD
 -- Loading package TEXTIO
 -- Loading package std_logic_1164
 -- Loading package std_logic_arith
 -- Loading package STD_LOGIC_UNSIGNED
--- Compiling entity cnt_horas
--- Compiling architecture rtl of cnt_horas
+-- Compiling package pack_test_reloj
+-- Compiling package body pack_test_reloj
+-- Loading package pack_test_reloj
 
 } {} {}}
