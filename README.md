@@ -9,7 +9,7 @@ El diseño está estructurado de manera que existen 5 modulos principales.
 		· clk_in: reloj que llega por la linea clk. La controla el master spi
 		· SDI: son los datos que se reciben por la linea SDI del spi.
 		· dato_out(7 downto 0): dato que se quiere mandar por la linea SDO. Logica_spi es el módulo que le pasa este valor. (8 bit?)
-		· dato_nuevo: señal de un bit que indica que se ha cargado un nuevo dato en dato_out y que este debe ser enviado
+		· dato_nuevo: señal de un bit que indica que se ha cargado un nuevo dato en dato_out y que este debe ser enviado. Se debe activar durante un ciclo de reloj
 
 	- Salidas:
 		· SDO: datos al master spi
