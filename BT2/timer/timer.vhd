@@ -13,6 +13,8 @@
 -- Date: 2023-04-24;
 -- Version: 1.0;
 
+-- No hace falta estos tics pero se queda el modelo para reusarlo
+
 
 library ieee;
 use ieee.std_logic_1164.all;
@@ -60,6 +62,7 @@ use ieee.std_logic_unsigned.all;
         tds_min <= '1' when cnt_div_tdsmin = div_6ns else '0';
 
 --------------------------------------------------------------------------
+                
         
         divisor_tZ_max: process (clk, nRst)
         begin
@@ -107,6 +110,16 @@ use ieee.std_logic_unsigned.all;
             end if;
         end process divisor_tdh_min;
         --- PREGUNTA: podemos directamente conectar el reloj en el portmap como la salida de del tic????
+
+        process(clk, nRst)
+        begin
+            if (nRst = '0') then
+                tdh_min <= '0';
+            elsif (clk'event and clk='1') then
+                tdh_min <= not tdh_min;
+            end if;
+        end process;
+        
 
     
     end rtl;
