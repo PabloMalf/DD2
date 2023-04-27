@@ -59,12 +59,13 @@ begin
               estado <= single;
            end if;
         when single=>
-            if adr_com = X"0001" and dato_rx(7)='1' and estado=MSB then
+            if adr_com = X"0001" and dato_rx(7)='0' and estado=MSB then
               estado <= streaming;
-            elsif adr_com= X"0001" and dato_rx(0)='1' and estado=LSB then 
+            elsif adr_com= X"0001" and dato_rx(0)='0' and estado=LSB then 
               estado <= streaming;
            end if;
       end case;
+      
     end if ;
   end process;
   --Explicacion de reverse : segun internet es una funcion de std_logic_1164
@@ -84,7 +85,7 @@ begin
   begin
     if nRst = '0' then
       dato_in_reg<= (others => '0');
-      nWR<= '0';
+      nWR<= '1';
     elsif clk'event and clk = '1' then
       if estado=steaming and data_ready='1' and  adr_com(0)='0'  then   --CASO STREAMING ESCRITURA
           nWR<= '0';                                                    
