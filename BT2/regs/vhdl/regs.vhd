@@ -3,6 +3,7 @@
 -- entradas: 
 -- clk: reloj del origen 
 -- nRst: reset asincrono para inicializar el registro
+-- nWR: habilita la escritura o lectura de los registros
 -- dato_in_reg: dato de entrada
 -- adr_reg: direccion de entrada
 -- salidas:
@@ -22,6 +23,8 @@ port(
     adr_reg :    buffer std_logic_vector(3 downto 0);
     dato_reg:    buffer std_logic_vector(7 downto 0);
     nWR:         buffer std_logic
+    ena_in:      in std_logic;
+    ena_out:     buffer std_logic;
     );
 end entity;
 
@@ -63,9 +66,10 @@ architecture rtl of regs is
             reg10 <= (others => '0');
 
             dato_reg <= (others => '0');
+            ena_out <= '0';
         
         elsif clk'event and clk='1' then
-            if (nWR= '0') then
+            if nWR= '0' and ena_in='1' then
                 case adr_reg is
                     when "0000" => reg0 <= dato_in_reg;
                     when "0001" => reg1 <= dato_in_reg;
@@ -83,10 +87,11 @@ architecture rtl of regs is
                     when "1101" => reg13 <= dato_in_reg;
                     when "1110" => reg14 <= dato_in_reg;
                     when "1111" => reg15 <= dato_in_reg;
-                    when others => null;
+                    when others => X"XX";
                 end case;
+                ena_out <= '1';
 
-            else -- es decir, nWR='1'
+            elsif nWR='1' and ena_in='1' then  -- es decir, nWR='1'
 
                 case adr_reg is
                     when "0000" => dato_reg <= reg0;
@@ -105,8 +110,13 @@ architecture rtl of regs is
                     when "1101" => dato_reg <= reg13;
                     when "1110" => dato_reg <= reg14;
                     when "1111" => dato_reg <= reg15;
-                    when others => null;
+                    when others => X"XX";
                 end case;
+                ena_out <= '1';
+            else 
+            
+            ena_out <='0';
+
             end if;
         end if;
 
