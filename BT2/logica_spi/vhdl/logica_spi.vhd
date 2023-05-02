@@ -151,9 +151,19 @@ begin
             init_tx<='0';
 
         elsif clk'event and clk='1' then
-            if 
-
-  
+            if ena_out='1' then
+              init_tx<='1';
+              if estado_bit=MSB;
+                dato_tx<=dato_out_reg;
+              elsif estado_bit=LSB;
+                dato_tx<=std_logic_vector(reverse(unsigned(dato_out_reg)));
+              end if;
+            else 
+              init_tx<='0';
+            end if;
+        end if;    
+    end process;
+    
   --CONTADOR DE DATOS DE COM_SPI
     process(clk, nRst)       
     begin
