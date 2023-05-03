@@ -23,16 +23,15 @@ port(clk:             in     std_logic;
      dato_in_reg:     buffer std_logic_vector(7 downto 0);
      nWR:             buffer std_logic;                                 
      adr_reg:         buffer std_logic_vector(3 downto 0);  
-     ena_in:          buffer std_logic;                    --Salida para registros que indica que el dato esta listo y sepuede escribir en el registro
-
+     ena_in:          buffer std_logic                    --Salida para registros que indica que el dato esta listo y sepuede escribir en el registro
     );
 end entity;
 
-architecture estructural of logica_spi is
+architecture rtl of logica_spi is
   type t_estado_escritura is (streaming, single); --estados de lectura/escritura
-  signal estado_escritura: t_estado;
+  signal estado_escritura: t_estado_escritura;
   type t_estado_bit is (MSB, LSB); --estados de modos de bit mas significativo
-  signal estado_bit: t_estado; 
+  signal estado_bit: t_estado_bit; 
   type t_orden_escritura is (ascendente, descendente ); --estados de asc/desc
   signal orden_escritura: t_orden_escritura;
 
@@ -66,9 +65,9 @@ begin
               estado_escritura <= single;
            end if;
         when single=>
-            if adr_com = X"0001" and dato_rx(7)='0' and estado=MSB and dato_ready='1' then
+            if adr_com = X"0001" and dato_rx(7)='0' and estado_bit=MSB and dato_ready='1' then
               estado_escritura <= streaming;
-            elsif adr_com= X"0001" and dato_rx(0)='0' and estado=LSB and dato_ready='1' then 
+            elsif adr_com= X"0001" and dato_rx(0)='0' and estado_bit=LSB and dato_ready='1' then 
               estado_escritura <= streaming;
            end if;
       end case;
@@ -99,15 +98,15 @@ begin
     end if ;
   end process;
   --Explicacion de reverse : segun internet es una funcion de std_logic_1164
-  adr_T1<= dato_rx when contador=0  and estado_bit=MSB and data_ready='1'  else
-           std_logic_vector(reverse(unsigned(dato_rx)))  when  contador=0  and estado_bit=LSB and data_ready='1' else
-           dato_rx when contador_multiplo=0 and estado_bit=MSB and data_ready='1' else 
-           std_logic_vector(reverse(unsigned(dato_rx))) when contador_multiplo=0 and estado_bit=LSB and data_ready='1'
+  adr_T1<= dato_rx when contador=0  and estado_bit=MSB and dato_ready='1'  else
+           dato_rx(7) & dato_rx(6) & dato_rx(5) & dato_rx(4) & dato_rx(3) & dato_rx(2) &dato_rx(1) & dato_rx(0)  when  contador=0  and estado_bit=LSB and dato_ready='1' else
+           dato_rx when contador_multiplo=0 and estado_bit=MSB and dato_ready='1' else 
+           dato_rx(7) & dato_rx(6) & dato_rx(5) & dato_rx(4) & dato_rx(3) & dato_rx(2) &dato_rx(1) & dato_rx(0) when contador_multiplo=0 and estado_bit=LSB and dato_ready='1'
            else X"00";
   adr_com<= adr_T1 & dato_rx when estado_escritura=streaming and contador=1 and estado_bit=MSB else  --convierte el adr en algo legible para Registros
-            adr_T1 & std_logic_vector(reverse(unsigned(dato_rx))) when estado_escritura=streaming and contador=1 and estado_bit=LSB else 
+            adr_T1 & dato_rx(7) & dato_rx(6) & dato_rx(5) & dato_rx(4) & dato_rx(3) & dato_rx(2) &dato_rx(1) & dato_rx(0) when estado_escritura=streaming and contador=1 and estado_bit=LSB else 
             adr_T1 & dato_rx when contador_multiplo=1 and estado_bit=MSB else 
-            adr_T1 & std_logic_vector(reverse(unsigned(dato_rx))) when contador_multiplo=1 and estado_bit=LSB
+            adr_T1 & dato_rx(7) & dato_rx(6) & dato_rx(5) & dato_rx(4) & dato_rx(3) & dato_rx(2) &dato_rx(1) & dato_rx(0) when contador_multiplo=1 and estado_bit=LSB
             else X"0000";  
 
     adr_com_actual<= adr_com + contador - 2 when orden_escritura=ascendente else -- address actual en caso de streaming dependiendo si es ascendente o descendente
@@ -121,68 +120,70 @@ begin
       dato_in_reg<= (others => '0');
       nWR<= '1';
     elsif clk'event and clk = '1' then
-      if estado=steaming and data_ready='1' and  adr_com(0)='0'  then   --CASO STREAMING ESCRITURA
+      if estado_escritura=streaming and dato_ready='1' and  adr_com(0)='0'  then   --CASO STREAMING ESCRITURA
           nWR<= '0';                                                    
-          adr_reg<= adr_com_actual(5 downto 1);                     --Escribo la direccion y el dato para registro
-          ena_in='1';
-          if estado=MSB then 
+          adr_reg<= adr_com_actual(4 downto 1); --(5 downto 1);                     --Escribo la direccion y el dato para registro
+          ena_in<='1';
+          if estado_bit=MSB then 
             dato_in_reg<= dato_rx;
           else
-            dato_in_reg<= std_logic_vector(reverse(unsigned(dato_rx)));
+            dato_in_reg<= dato_rx(7) & dato_rx(6) & dato_rx(5) & dato_rx(4) & dato_rx(3) & dato_rx(2) & dato_rx(1) & dato_rx(0);
           end if;
-      elsif estado=single and  contador_multiplo=1 and  data_ready='1' and  adr_com(0)='0 then --CASO SINGLE ESCRITURA
+      elsif estado_escritura=single and  contador_multiplo = 1 and  dato_ready = '1' and  adr_com(0)= '0' then --CASO SINGLE ESCRITURA
            nWR<= '0';
-           ena_in='1';
-           adr_reg<= adr_com_actual;
-           if estado=MSB then 
-            dato_in_reg<= dato_rx;
+           ena_in<='1';
+           adr_reg<= adr_com_actual(4 downto 1);
+           if estado_bit = MSB then 
+            dato_in_reg <= dato_rx;
           else
-            dato_in_reg<= std_logic_vector(reverse(unsigned(dato_rx)));
+            dato_in_reg<= dato_rx(7) & dato_rx(6) & dato_rx(5) & dato_rx(4) & dato_rx(3) & dato_rx(2) & dato_rx(1) & dato_rx(0);
           end if;
-      elsif data_ready='1' and  adr_com(0)='1'  then                       --CASO LECTURA  PARA REGISTROS
+      elsif dato_ready='1' and  adr_com(0)='1'  then                       --CASO LECTURA  PARA REGISTROS
           nWR<= '1'; 
-          adr_reg<= adr_com(5 downto 1); -- en este caso no hace falta igualarlo a adr_com_actual dado que da igual si es ascendente o descendente
-      end if; 
+          adr_reg<= adr_com(4 downto 1);--(5 downto 1); -- en este caso no hace falta igualarlo a adr_com_actual dado que da igual si es ascendente o descendente
+      end if;
+    end if;
   end process;
   
 --- INFORMACION PARA COMUNICACION
     process(clk, nRst)
-        if nRst='0' then
-            init_tx<='0';
+    begin
+      if nRst='0' then
+          init_tx<='0';
 
-        elsif clk'event and clk='1' then
-            if ena_out='1' then
-              init_tx<='1';
-              if estado_bit=MSB;
-                dato_tx<=dato_out_reg;
-              elsif estado_bit=LSB;
-                dato_tx<=std_logic_vector(reverse(unsigned(dato_out_reg)));
-              end if;
-            else 
-              init_tx<='0';
+      elsif clk'event and clk='1' then
+          if ena_out='1' then
+            init_tx<='1';
+            if estado_bit=MSB then
+              dato_tx<=dato_out_reg;
+            elsif estado_bit=LSB then
+              dato_tx<=dato_out_reg(7) & dato_out_reg(6) & dato_out_reg(5) & dato_out_reg(4) & dato_out_reg(3) & dato_out_reg(2) & dato_out_reg(1) & dato_out_reg(0);
             end if;
-        end if;    
+          else 
+            init_tx<='0';
+          end if;
+      end if;    
     end process;
     
   --CONTADOR DE DATOS DE COM_SPI
     process(clk, nRst)       
     begin
-    if nRst = '0' then
-      contador<= (others => '0');
-      contador_multiplo<= (others => '0');
+      if nRst = '0' then
+        contador<= (others => '0');
+        contador_multiplo<= (others => '0');
       
-    elsif clk'event and clk = '1' then
-      if init_rx='1'  then   
-        contador <= (others => '0');
-       elsif dato_ready='1' then
-        contador <= contador+1;
-        if contador_multiplo/=2 then 
-          contador_multiplo<=contador_multiplo+1;
-        else 
-          contador_multiplo <= (others => '0');
+      elsif clk'event and clk = '1' then
+        if init_rx='1'  then   
+          contador <= (others => '0');
+        elsif dato_ready='1' then
+          contador <= contador+1;
+          if contador_multiplo/=2 then 
+            contador_multiplo<=contador_multiplo+1;
+          else 
+            contador_multiplo <= (others => '0');
+          end if;
+        end if;
       end if;
-      
-    end if;
   end process;
 
 end rtl;
