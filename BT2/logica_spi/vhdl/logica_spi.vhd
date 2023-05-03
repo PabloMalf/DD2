@@ -43,6 +43,7 @@ architecture rtl of logica_spi is
   signal contador_multiplo : std_logic_vector (4 downto 0); --suma cada 3 de contador (para single carrier)
   signal adr_com_actual : std_logic_vector(15 downto 0); --direccion de 16 bits del adr que viene del com_spi
   
+  signal nWR_actual: std_logic; -- Guarda el estado de lectura/escritura. Es el bit menos significativo de adr_com
 begin
   --PREGUNTAS PROFE:
         --Se puede usar la funcion reverse???? respuesta: si pero hayq ue tener cuidado por si no es sintetizable
@@ -56,6 +57,7 @@ begin
     if nRst = '0' then
       estado_escritura<= streaming;
       estado_bit<=MSB;
+      orden_escritura<=descendente;
     elsif clk'event and clk = '1' then
       case estado_escritura is
         when streaming => 
@@ -98,31 +100,34 @@ begin
     end if ;
   end process;
   --Explicacion de reverse : segun internet es una funcion de std_logic_1164
-  adr_T1<= dato_rx when contador=0  and estado_bit=MSB and dato_ready='1'  else
-           dato_rx(7) & dato_rx(6) & dato_rx(5) & dato_rx(4) & dato_rx(3) & dato_rx(2) &dato_rx(1) & dato_rx(0)  when  contador=0  and estado_bit=LSB and dato_ready='1' else
-           dato_rx when contador_multiplo=0 and estado_bit=MSB and dato_ready='1' else 
-           dato_rx(7) & dato_rx(6) & dato_rx(5) & dato_rx(4) & dato_rx(3) & dato_rx(2) &dato_rx(1) & dato_rx(0) when contador_multiplo=0 and estado_bit=LSB and dato_ready='1'
-           else X"00";
+  adr_T1<= dato_rx when contador = 0  and estado_bit=MSB and dato_ready='1' and estado_escritura=streaming else
+           dato_rx(7) & dato_rx(6) & dato_rx(5) & dato_rx(4) & dato_rx(3) & dato_rx(2) &dato_rx(1) & dato_rx(0)  when  contador = 0  and estado_bit=LSB and dato_ready='1' and estado_escritura=streaming else
+           dato_rx when contador_multiplo = 0 and estado_bit=MSB and dato_ready='1'  and estado_escritura=single else 
+           dato_rx(7) & dato_rx(6) & dato_rx(5) & dato_rx(4) & dato_rx(3) & dato_rx(2) &dato_rx(1) & dato_rx(0) when contador_multiplo = 0 and estado_bit=LSB and dato_ready='1' and estado_escritura=single
+           else adr_T1;
   adr_com<= adr_T1 & dato_rx when estado_escritura=streaming and contador=1 and estado_bit=MSB else  --convierte el adr en algo legible para Registros
             adr_T1 & dato_rx(7) & dato_rx(6) & dato_rx(5) & dato_rx(4) & dato_rx(3) & dato_rx(2) &dato_rx(1) & dato_rx(0) when estado_escritura=streaming and contador=1 and estado_bit=LSB else 
-            adr_T1 & dato_rx when contador_multiplo=1 and estado_bit=MSB else 
-            adr_T1 & dato_rx(7) & dato_rx(6) & dato_rx(5) & dato_rx(4) & dato_rx(3) & dato_rx(2) &dato_rx(1) & dato_rx(0) when contador_multiplo=1 and estado_bit=LSB
-            else X"0000";  
+            adr_T1 & dato_rx when contador_multiplo=1 and estado_bit=MSB  and estado_escritura=single else 
+            adr_T1 & dato_rx(7) & dato_rx(6) & dato_rx(5) & dato_rx(4) & dato_rx(3) & dato_rx(2) &dato_rx(1) & dato_rx(0) when contador_multiplo=1 and estado_bit=LSB  and estado_escritura=single
+            else adr_com;  
 
-    adr_com_actual<= adr_com + contador - 2 when orden_escritura=ascendente else -- address actual en caso de streaming dependiendo si es ascendente o descendente
-                     adr_com - contador + 2 when orden_escritura=descendente else
-                     X"0000";
-  
+    adr_com_actual<= ('0' & adr_com (15 downto 1)) + contador - 2 when orden_escritura=ascendente and contador /= 0 else -- address actual en caso de streaming dependiendo si es ascendente o descendente
+                     ('0' & adr_com(15 downto 1)) - contador + 2 when orden_escritura=descendente and contador /= 0 else
+                     X"FFFF";
+
+    nWR_actual <= adr_com(0) when estado_bit = MSB and contador = 1 else
+                  adr_com(15) when estado_bit= LSB and contador=1 else '1';  -- LSB
   --- ESCRITURA/LECTURA DE REGISTROS
   process(clk, nRst)       
   begin
     if nRst = '0' then
       dato_in_reg<= (others => '0');
       nWR<= '1';
+      ena_in <= '0';
     elsif clk'event and clk = '1' then
-      if estado_escritura=streaming and dato_ready='1' and  adr_com(0)='0'  then   --CASO STREAMING ESCRITURA
+      if estado_escritura=streaming and dato_ready='1' and  nWR_actual='0' and contador=1 then   --CASO STREAMING ESCRITURA
           nWR<= '0';                                                    
-          adr_reg<= adr_com_actual(4 downto 1); --(5 downto 1);                     --Escribo la direccion y el dato para registro
+          adr_reg<= adr_com_actual(3 downto 0); --(5 downto 1);                     --Escribo la direccion y el dato para registro
           ena_in<='1';
           if estado_bit=MSB then 
             dato_in_reg<= dato_rx;
@@ -132,15 +137,22 @@ begin
       elsif estado_escritura=single and  contador_multiplo = 1 and  dato_ready = '1' and  adr_com(0)= '0' then --CASO SINGLE ESCRITURA
            nWR<= '0';
            ena_in<='1';
-           adr_reg<= adr_com_actual(4 downto 1);
+           adr_reg<= adr_com(4 downto 1);
            if estado_bit = MSB then 
             dato_in_reg <= dato_rx;
           else
             dato_in_reg<= dato_rx(7) & dato_rx(6) & dato_rx(5) & dato_rx(4) & dato_rx(3) & dato_rx(2) & dato_rx(1) & dato_rx(0);
           end if;
-      elsif dato_ready='1' and  adr_com(0)='1'  then                       --CASO LECTURA  PARA REGISTROS
+      elsif dato_ready='1' and  nWR_actual='1' and estado_escritura=streaming and contador = 1 then                       --CASO LECTURA  PARA REGISTROS
+          nWR<= '1';
+          ena_in <= '1';
+          adr_reg<= adr_com_actual(3 downto 0);--(5 downto 1); -- en este caso no hace falta igualarlo a adr_com_actual dado que da igual si es ascendente o descendente
+     elsif dato_ready='1' and   adr_com(0)='1' and estado_escritura=single and contador_multiplo = 1 then                       --CASO LECTURA  PARA REGISTROS
           nWR<= '1'; 
-          adr_reg<= adr_com(4 downto 1);--(5 downto 1); -- en este caso no hace falta igualarlo a adr_com_actual dado que da igual si es ascendente o descendente
+          ena_in <= '1';
+          adr_reg<= adr_com(4 downto 1);
+     else 
+        ena_in <= '0';
       end if;
     end if;
   end process;

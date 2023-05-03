@@ -57,30 +57,32 @@ process
     nRst <= '0';
     init_rx <= '0';
     dato_ready <= '0';
+    init_tx <= '0';
     wait until clk = '1' and clk'event;
     wait until clk = '1' and clk'event;
     nRst <= '1';
-    
+    init_tx <= '1';
     init_rx <= '1';
     wait until clk'event and clk = '1';
     init_rx <= '0';
+    init_tx <= '0';
     wait for 8*Tclk_spi;
     wait until clk'event and clk = '1';
     
     -- Direccion
     dato_rx <= "00000000";
-    dato_ready <= '0';
+    dato_ready <= '1';
     wait until clk'event and clk = '1';
     dato_ready <= '0';
     wait for 8*Tclk_spi;        
     wait until clk'event and clk = '1';
-    dato_rx <= "00000011";
+    dato_rx <= "00000010";
     dato_ready <= '1';
     wait until clk'event and clk = '1';
     dato_ready <= '0';
 	wait for 8*Tclk_spi;        
     wait until clk'event and clk = '1';
-    dato_rx <= "00000100";
+    dato_rx <= "10000000";
     dato_ready <= '1';
     wait until clk'event and clk = '1';
     dato_ready <= '0';
