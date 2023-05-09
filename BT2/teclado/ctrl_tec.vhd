@@ -9,8 +9,8 @@ port(clk           : in std_logic;
      columna       : in std_logic_vector(3 downto 0);
      fila          : buffer std_logic_vector(3 downto 0);
      tecla_pulsada : buffer std_logic;
-     tecla         : buffer std_logic_vector(3 downto 0);
-     pulso_largo   : buffer std_logic);  
+     tecla         : buffer std_logic_vector(3 downto 0)
+     );  
 end entity;
 
 architecture rtl of ctrl_tec is
@@ -59,7 +59,7 @@ begin
         tecla_pulsada_reg <= '1';
         tecla_pulsada <= '0';
         tecla_pulsada_activada <= '0';
-      elsif ena_pulso_largo = '1' and tecla_pulsada_activada = '0' and pulso_largo = '0' then
+      elsif ena_pulso_largo = '1' and tecla_pulsada_activada = '0' then
         tecla_pulsada_activada <= '1';
         tecla_pulsada <= '1';
       elsif ena_pulso_largo = '1' and tecla_pulsada_activada = '1' then
@@ -77,7 +77,7 @@ begin
       ena_pulso_largo <= '0';
       cnt_pulso_largo <= (others => '0');
       reg_columna <= (others => '0');
-      pulso_largo <= '0';
+--      pulso_largo <= '0';
     elsif clk = '1' and clk'event then
       if tic = '1' and tecla_pulsada_reg = '1' then            -- Se ha detectado una pulsacion: se inicia el contador para detectar pulsos largos
         reg_columna <= columna;
@@ -87,10 +87,10 @@ begin
       if tic = '1' and reg_columna /= 15 then
         if cnt_pulso_largo < 400 then
           cnt_pulso_largo <= cnt_pulso_largo + 1;
-          pulso_largo <= '0';
+ --         pulso_largo <= '0';
         else
 --          cnt_pulso_largo <= (others => '0');
-          pulso_largo <= '1';
+ --         pulso_largo <= '1';
           ena_pulso_largo <= '0';
         end if;
       end if;
