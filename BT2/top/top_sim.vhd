@@ -8,15 +8,14 @@ entity top_sim is
           mode_3_4_h  : in std_logic;
           str_sgl_ins : in std_logic;
           add_up      : in std_logic;
-          tecla       : in std_logic_vector(3 downto 0);
           SDIO_m      : inout std_logic;
           SDIO_s      : inout std_logic;
           SDO_m       : in std_logic;
           SDO_s       : buffer std_logic;
           seg         : buffer std_logic_vector(7 downto 0);
-          mux_disp    : buffer std_logic_vector(3 downto 0)
-
-
+          mux_disp    : buffer std_logic_vector(3 downto 0);
+          columna     : in std_logic_vector(3 downto 0);
+          fila        : buffer std_logic_vector(3 downto 0)
     );
 end top_sim;
 
@@ -42,6 +41,8 @@ architecture estructural of top_sim is
   signal tz_max : std_logic;
   signal timer_teclado : std_logic;
   
+  signal tecla : std_logic_vector(3 downto 0);
+  signal tecla_pulsada: std_logic;
 begin
   SPI: entity work.spi(struct)
   port map(clk  => clk,
@@ -55,7 +56,7 @@ begin
   app_module: entity work.app_module(rtl)
   port map(nRst => nRst,
            clk  => clk,
-           tic_tecla => timer_teclado,
+           tic_tecla => tecla_pulsada,
            tecla => tecla,
            start => start,
            no_bytes => no_bytes,
@@ -99,16 +100,22 @@ begin
           );
 
   
-          timer: entity work.timer(rtl)
-          port map(clk => clk,
-                  nRst => nRst,
-                  tds_min => tds_min,
-                  tdh_min => tdh_min,
-                  tacces_max => tacces_max,
-                  tz_max => tz_max,
-                  timer_teclado => timer_teclado);        
-
-          
-       
+  timer: entity work.timer(rtl)
+  port map(clk => clk,
+          nRst => nRst,
+          tds_min => tds_min,
+          tdh_min => tdh_min,
+          tacces_max => tacces_max,
+          tz_max => tz_max,
+          timer_teclado => timer_teclado);        
+  
+  teclado: entity work.ctrl_tec(rtl)
+  port map(clk => clk,
+          nRst => nRst,
+          tic => timer_teclado,
+          columna => columna,
+          fila => fila,
+          tecla_pulsada => tecla_pulsada,
+          tecla =>tecla);
          
 end estructural;
