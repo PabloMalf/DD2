@@ -105,8 +105,10 @@ begin
                   tds_min => tds_min,
                   tdh_min => tdh_min,
                   tacces_max => tacces_max,
-                  tz_max => tz_max
-                  timer_teclado => timer_teclado,);        
+                  tz_max => tz_max,
+                  timer_teclado => timer_teclado);        
+
+          
        
          
 end estructural;
