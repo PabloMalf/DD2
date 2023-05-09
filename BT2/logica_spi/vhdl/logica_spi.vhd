@@ -22,7 +22,7 @@ port(clk:             in     std_logic;
      --Registros
      dato_in_reg:     buffer std_logic_vector(7 downto 0);
      nWR:             buffer std_logic;                                 
-     adr_reg:         buffer std_logic_vector(3 downto 0);  
+     adr_reg:         buffer std_logic_vector(4 downto 0);  
      ena_in:          buffer std_logic                    --Salida para registros que indica que el dato esta listo y sepuede escribir en el registro
     );
 end entity;
@@ -87,12 +87,12 @@ begin
         
       case orden_escritura is
         when ascendente =>
-            if adr_com_actual = X"0000" and dato_rx(5)='1' and dato_rx(2)= '1' and dato_ready='1' then -- da igual que este en MSB o LSB dado que es palindromo y son iguales en los dos modos
+            if adr_com_actual = X"0000" and dato_rx(5)='0' and dato_rx(2)= '0' and dato_ready='1' then -- da igual que este en MSB o LSB dado que es palindromo y son iguales en los dos modos
               orden_escritura <= descendente;
             end if;
 
         when descendente => 
-            if adr_com_actual = X"0000" and dato_rx(5)='0' and dato_rx(2)= '0' and dato_ready='1' then -- da igual que este en MSB o LSB dado que es palindromo y son iguales en los dos modos
+            if adr_com_actual = X"0000" and dato_rx(5)='1' and dato_rx(2)= '1' and dato_ready='1' then -- da igual que este en MSB o LSB dado que es palindromo y son iguales en los dos modos
               orden_escritura <= ascendente;
             end if;
         end case;
@@ -105,18 +105,18 @@ begin
            dato_rx when contador_multiplo = 0 and estado_bit=MSB and dato_ready='1'  and estado_escritura=single else 
            dato_rx(7) & dato_rx(6) & dato_rx(5) & dato_rx(4) & dato_rx(3) & dato_rx(2) &dato_rx(1) & dato_rx(0) when contador_multiplo = 0 and estado_bit=LSB and dato_ready='1' and estado_escritura=single
            else adr_T1;
-  adr_com<= adr_T1 & dato_rx when estado_escritura=streaming and contador=1 and estado_bit=MSB else  --convierte el adr en algo legible para Registros
-            adr_T1 & dato_rx(7) & dato_rx(6) & dato_rx(5) & dato_rx(4) & dato_rx(3) & dato_rx(2) &dato_rx(1) & dato_rx(0) when estado_escritura=streaming and contador=1 and estado_bit=LSB else 
-            adr_T1 & dato_rx when contador_multiplo=1 and estado_bit=MSB  and estado_escritura=single else 
-            adr_T1 & dato_rx(7) & dato_rx(6) & dato_rx(5) & dato_rx(4) & dato_rx(3) & dato_rx(2) &dato_rx(1) & dato_rx(0) when contador_multiplo=1 and estado_bit=LSB  and estado_escritura=single
+  adr_com<= adr_T1 & dato_rx when estado_escritura=streaming and contador=1 and estado_bit=MSB and dato_ready='1' else  --convierte el adr en algo legible para Registros
+            adr_T1 & dato_rx(7) & dato_rx(6) & dato_rx(5) & dato_rx(4) & dato_rx(3) & dato_rx(2) &dato_rx(1) & dato_rx(0)when estado_escritura=streaming and contador=1 and estado_bit=LSB  and dato_ready='1' else 
+            adr_T1 & dato_rx when contador_multiplo=1 and estado_bit=MSB  and estado_escritura=single and dato_ready='1' else 
+            adr_T1 & dato_rx(7) & dato_rx(6) & dato_rx(5) & dato_rx(4) & dato_rx(3) & dato_rx(2) &dato_rx(1) & dato_rx(0)  when contador_multiplo=1 and estado_bit=LSB  and estado_escritura=single and dato_ready='1'
             else adr_com;  
 
-    adr_com_actual<= ('0' & adr_com (15 downto 1)) + contador - 2 when orden_escritura=ascendente and contador /= 0 else -- address actual en caso de streaming dependiendo si es ascendente o descendente
-                     ('0' & adr_com(15 downto 1)) - contador + 2 when orden_escritura=descendente and contador /= 0 else
+    adr_com_actual<= ('0' & adr_com (14 downto 0)) + contador - 2 when orden_escritura=ascendente and contador /= 0 else -- address actual en caso de streaming dependiendo si es ascendente o descendente
+                     ('0' & adr_com(14 downto 0)) - contador + 2 when orden_escritura=descendente and contador /= 0 else
                      X"FFFF";
 
-    nWR_actual <= adr_com(0) when estado_bit = MSB and contador = 1 else
-                  adr_com(15) when estado_bit= LSB and contador=1 else '1';  -- LSB
+    nWR_actual <= adr_com(15) when estado_bit = MSB and contador = 2 else
+                  adr_com(0) when estado_bit= LSB and contador=2  else nWR_actual;  -- LSB
   --- ESCRITURA/LECTURA DE REGISTROS
   process(clk, nRst)       
   begin
@@ -125,32 +125,32 @@ begin
       nWR<= '1';
       ena_in <= '0';
     elsif clk'event and clk = '1' then
-      if estado_escritura=streaming and dato_ready='1' and  nWR_actual='0' and contador=1 then   --CASO STREAMING ESCRITURA
+      if estado_escritura=streaming and dato_ready='1' and  nWR_actual='0' and contador>=2 then   --CASO STREAMING ESCRITURA
           nWR<= '0';                                                    
-          adr_reg<= adr_com_actual(3 downto 0); --(5 downto 1);                     --Escribo la direccion y el dato para registro
+          adr_reg<= adr_com_actual(4 downto 0); --(5 downto 1);                     --Escribo la direccion y el dato para registro
           ena_in<='1';
           if estado_bit=MSB then 
             dato_in_reg<= dato_rx;
           else
             dato_in_reg<= dato_rx(7) & dato_rx(6) & dato_rx(5) & dato_rx(4) & dato_rx(3) & dato_rx(2) & dato_rx(1) & dato_rx(0);
           end if;
-      elsif estado_escritura=single and  contador_multiplo = 1 and  dato_ready = '1' and  adr_com(0)= '0' then --CASO SINGLE ESCRITURA
+      elsif estado_escritura=single and  contador_multiplo = 1 and  dato_ready = '1' and  adr_com(15)= '0' then --CASO SINGLE ESCRITURA
            nWR<= '0';
            ena_in<='1';
-           adr_reg<= adr_com(4 downto 1);
+           adr_reg<= adr_com(4 downto 0);
            if estado_bit = MSB then 
             dato_in_reg <= dato_rx;
           else
             dato_in_reg<= dato_rx(7) & dato_rx(6) & dato_rx(5) & dato_rx(4) & dato_rx(3) & dato_rx(2) & dato_rx(1) & dato_rx(0);
           end if;
-      elsif dato_ready='1' and  nWR_actual='1' and estado_escritura=streaming and contador = 1 then                       --CASO LECTURA  PARA REGISTROS
+      elsif dato_ready='1' and  nWR_actual='1' and estado_escritura=streaming and contador = 2 then                       --CASO LECTURA  PARA REGISTROS
           nWR<= '1';
           ena_in <= '1';
-          adr_reg<= adr_com_actual(3 downto 0);--(5 downto 1); -- en este caso no hace falta igualarlo a adr_com_actual dado que da igual si es ascendente o descendente
-     elsif dato_ready='1' and   adr_com(0)='1' and estado_escritura=single and contador_multiplo = 1 then                       --CASO LECTURA  PARA REGISTROS
+          adr_reg<= adr_com_actual(4 downto 0);--(5 downto 1); -- en este caso no hace falta igualarlo a adr_com_actual dado que da igual si es ascendente o descendente
+     elsif dato_ready='1' and   adr_com(15)='1' and estado_escritura=single and contador_multiplo = 1 then                       --CASO LECTURA  PARA REGISTROS
           nWR<= '1'; 
           ena_in <= '1';
-          adr_reg<= adr_com(4 downto 1);
+          adr_reg<= adr_com(4 downto 0);
      else 
         ena_in <= '0';
       end if;
