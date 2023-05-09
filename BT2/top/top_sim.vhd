@@ -8,7 +8,6 @@ entity top_sim is
           mode_3_4_h  : in std_logic;
           str_sgl_ins : in std_logic;
           add_up      : in std_logic;
-          tic_tecla   : in std_logic;
           tecla       : in std_logic_vector(3 downto 0);
           SDIO_m      : inout std_logic;
           SDIO_s      : inout std_logic;
@@ -16,6 +15,8 @@ entity top_sim is
           SDO_s       : buffer std_logic;
           seg         : buffer std_logic_vector(7 downto 0);
           mux_disp    : buffer std_logic_vector(3 downto 0)
+
+
     );
 end top_sim;
 
@@ -35,6 +36,11 @@ architecture estructural of top_sim is
   signal tic_2_5ms: std_logic;
   signal tic_0_5s: std_logic;
 
+  signal tds_min : std_logic;
+  signal tdh_min : std_logic;
+  signal tacces_max : std_logic;
+  signal tz_max : std_logic;
+  signal timer_teclado : std_logic;
   
 begin
   SPI: entity work.spi(struct)
@@ -49,7 +55,7 @@ begin
   app_module: entity work.app_module(rtl)
   port map(nRst => nRst,
            clk  => clk,
-           tic_tecla => tic_tecla,
+           tic_tecla => timer_teclado,
            tecla => tecla,
            start => start,
            no_bytes => no_bytes,
@@ -91,6 +97,16 @@ begin
            seg => seg,
            mux_disp=> mux_disp 
           );
+
+  
+          timer: entity work.timer(rtl)
+          port map(clk => clk,
+                  nRst => nRst,
+                  tds_min => tds_min,
+                  tdh_min => tdh_min,
+                  tacces_max => tacces_max,
+                  tz_max => tz_max
+                  timer_teclado => timer_teclado,);        
        
          
 end estructural;
