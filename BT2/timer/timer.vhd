@@ -38,7 +38,7 @@ use ieee.std_logic_unsigned.all;
         signal cnt_div_taccesmax :  std_logic_vector(5 downto 0); -- MODULO 30
         signal cnt_div_tzmax :      std_logic_vector(4 downto 0); -- MODULO 10
         signal cnt_div_tdhmin :     std_logic; -- MODULO 1
-        signal cnt_timer_teclado :  std_logic_vector(11 downto 0); -- MODULO 25000
+        signal cnt_timer_teclado :  std_logic_vector(18 downto 0); -- MODULO 25000
         -- para la salida T_DH_MIN no haría falta dado que va con la salida del reloj pero lo optimiza quartus
         constant div_6ns : natural:= 2;
         constant div_60ns : natural:= 29;
@@ -133,7 +133,7 @@ use ieee.std_logic_unsigned.all;
                     timer_teclado <= '1';
                     cnt_timer_teclado <= cnt_timer_teclado + 1;
 
-                elsif cnt_timer_teclado = 2499 then
+                elsif cnt_timer_teclado = 249999 then
                     timer_teclado <= '0';
                     cnt_timer_teclado <= (others => '0');
                      
