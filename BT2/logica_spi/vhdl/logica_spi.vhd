@@ -107,7 +107,7 @@ begin
             end if;
 
         when hilos3 => 
-            if adr_com_actual = X"0000" and dato_rx(4)='0' and dato_rx(4)= '0' and dato_ready='1' then -- da igual que este en MSB o LSB dado que es palindromo y son iguales en los dos modos
+            if adr_com_actual = X"0000" and dato_rx(4)='0' and dato_rx(3)= '0' and dato_ready='1' then -- da igual que este en MSB o LSB dado que es palindromo y son iguales en los dos modos
               n_hilos <= hilos4;
             end if;
         end case;
