@@ -55,7 +55,7 @@ architecture rtl of regs is
     process(clk, nRst)
     begin
         if nRst='0' then
-            reg0 <= (others => '0');
+            reg0 <= (4=> '1', 3=> '1',others => '0');
             reg1 <= (others => '0');
             reg2 <= (others => '0');
             reg3 <= (others => '0');
