@@ -17,8 +17,8 @@ port(clk:             in     std_logic;
      --SALIDAS
      --Com_SPI
      init_tx:         buffer std_logic;
-    -- fin_tx:          buffer std_logic;   no lo usamos en ningun lado
      dato_tx:         buffer std_logic_vector(7 downto 0);
+     modo_3_4_hilos:  buffer     std_logic;
      --Registros
      dato_in_reg:     buffer std_logic_vector(7 downto 0);
      nWR:             buffer std_logic;                                 
@@ -34,6 +34,8 @@ architecture rtl of logica_spi is
   signal estado_bit: t_estado_bit; 
   type t_orden_escritura is (ascendente, descendente ); --estados de asc/desc
   signal orden_escritura: t_orden_escritura;
+   type t_hilos is (hilos3, hilos4 ); --estados de asc/desc
+  signal n_hilos: t_hilos;
 
   signal adr_com : std_logic_vector(15 downto 0); --direccion de 16 bits del adr que viene del com_spi
   signal adr_T1  : std_logic_vector(7 downto 0);
@@ -58,6 +60,7 @@ begin
       estado_escritura<= streaming;
       estado_bit<=MSB;
       orden_escritura<=descendente;
+      n_hilos<=hilos4;
     elsif clk'event and clk = '1' then
       case estado_escritura is
         when streaming => 
@@ -96,9 +99,23 @@ begin
               orden_escritura <= ascendente;
             end if;
         end case;
+        
+        case n_hilos is
+        when hilos4 =>
+            if adr_com_actual = X"0000" and dato_rx(4)='1' and dato_rx(3)= '1' and dato_ready='1' then -- da igual que este en MSB o LSB dado que es palindromo y son iguales en los dos modos
+              n_hilos <= hilos3;
+            end if;
+
+        when hilos3 => 
+            if adr_com_actual = X"0000" and dato_rx(4)='0' and dato_rx(4)= '0' and dato_ready='1' then -- da igual que este en MSB o LSB dado que es palindromo y son iguales en los dos modos
+              n_hilos <= hilos4;
+            end if;
+        end case;
 
     end if ;
   end process;
+  --Señal para el numero de hilos
+  modo_3_4_hilos<= '1' when n_hilos=hilos3 else '0';
   --Explicacion de reverse : segun internet es una funcion de std_logic_1164
   adr_T1<= dato_rx when contador = 0  and estado_bit=MSB and dato_ready='1' and estado_escritura=streaming else
            dato_rx(7) & dato_rx(6) & dato_rx(5) & dato_rx(4) & dato_rx(3) & dato_rx(2) &dato_rx(1) & dato_rx(0)  when  contador = 0  and estado_bit=LSB and dato_ready='1' and estado_escritura=streaming else
