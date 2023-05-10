@@ -12,13 +12,14 @@ port(clk           : in std_logic;
      nRst          : in std_logic;
      cs_in         : in std_logic;                          -- Linea Chip Select
      clk_in        : in std_logic;                          -- Linea CLK
-     dato_tx      : in std_logic_vector(7 downto 0);       -- Dato que el esclavo quiere mandar por la linea
-     init_tx        : in std_logic;                          -- Informa de que el dato es nuevo
+     dato_tx       : in std_logic_vector(7 downto 0);       -- Dato que el esclavo quiere mandar por la linea
+     init_tx       : in std_logic;                          -- Informa de que el dato es nuevo
      SDI           : inout std_logic;                          -- Linea SDI
      SDO           : buffer std_logic;                      -- Linea SDO
      dato_rx       : buffer std_logic_vector(7 downto 0);   -- Dato que se ha recibido del master
      data_ready    : buffer std_logic;                      -- dato_rx puede ser leido. Se activa durante un pulso de reloj cuando se ha recibido un byte.
-     init_rx       : buffer std_logic);                      -- Indica el inicio de la comunicación
+     init_rx       : buffer std_logic;                      -- Indica el inicio de la comunicación
+     modo_3_4_hilos: in     std_logic);                     -- El modulo de logica envia informacion sobre si se debe enviar a 3 o 4 hilos. 0 = 4 hilos (por defecto), 1 = 3 hilos
 --     data_sent     : buffer std_logic);                     -- se ha enviado el dato
 end entity;
 
@@ -94,7 +95,6 @@ begin
     if nRst = '0' then
       init_rx <= '0';
       prev_reg_cs <= '0';
---      reg_init_rx <= '0';
     elsif clk'event and clk = '1' then
       prev_reg_cs <= reg_cs;    
       if reg_cs /= prev_reg_cs and reg_cs = '0' then          -- Condicion de start
@@ -109,7 +109,6 @@ begin
   -- se encarga de leer la linea sdi y almacenar los bits en reg_dato_in
   begin
     if nRst = '0' then
---      dato_rx <= (others => '0');
       reg_dato_in <= (others => '0');
       cnt_rcv_bit <= (others => '0');
       data_ready <= '0';
@@ -129,7 +128,6 @@ begin
           else
             cnt_rcv_bit <= (0 => '1', others => '0');
             reg_dato_in <= (others => '0');
-     --       reg_dato_in(8) <= '1';                        -- Indica que ya se tiene el byte completo
             data_ready <= '0';
           end if;
         else 
@@ -141,7 +139,7 @@ begin
   
   -- Pasa los datos en el orden que los ha recibido
   dato_rx <= reg_dato_in when cnt_rcv_bit = 8 and reg_dato_in >= 0 else
-              dato_rx;
+             dato_rx;
   
   process(nRst,clk)
   -- recibe un dato del modulo de logica y lo envia por linea SDO_no_Z cuando el master aporta un reloj
@@ -150,14 +148,12 @@ begin
       reg_dato_out <= (others => '0');
       enviando <= '0';
       cnt_send_bit <= (others => '0');
---     data_sent <= '0';
       SDO_no_Z <= '1';
     elsif clk'event and clk = '1' then
       if init_tx = '1' then
         reg_dato_out <= dato_tx;
         enviando <= '1';
         cnt_send_bit <= (others => '0');
---        data_sent <= '0';
       elsif enviando = '1' then
         if cnt_send_bit /= 9 and flanco_subida_clk_in = '1' and reg_SDI = 'Z' then
           cnt_send_bit <= cnt_send_bit + 1;
@@ -165,19 +161,18 @@ begin
           SDO_no_Z <= reg_dato_out(7);
         elsif cnt_send_bit = 9 then
           cnt_send_bit <= (others => '0');
---          data_sent <= '1';
           enviando <= '0';
           SDO_no_Z <= '1';
         end if;
-      else
---        data_sent <= '0';
       end if;
     end if;
   end process;
    
-  SDI <= 'Z';
+  SDI <= 'Z' when cnt_send_bit=0 
+          else SDO_no_Z when modo_3_4_hilos = '1' 
+          else 'Z';
   
- SDO <= 'Z' when cnt_send_bit=0 else SDO_no_Z;
-  --       '1' when SDO_no_Z = '1' else '0';
-  --SDO <= '1' when SDO_no_Z = '1' else '0';
+  SDO <= 'Z' when cnt_send_bit=0 
+          else SDO_no_Z when modo_3_4_hilos /= '1' 
+          else 'Z';
 end rtl;
