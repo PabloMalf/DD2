@@ -28,7 +28,10 @@ use ieee.std_logic_unsigned.all;
         tdh_min :   buffer std_logic;
         tacces_max: buffer std_logic;
         tz_max :    buffer std_logic;
-        timer_teclado: buffer std_logic
+        timer_teclado: buffer std_logic;
+        tic_2_5ms:  buffer std_logic;
+        tic_0_5s:  buffer std_logic
+
     
     );
     end timer;
@@ -39,11 +42,17 @@ use ieee.std_logic_unsigned.all;
         signal cnt_div_tzmax :      std_logic_vector(4 downto 0); -- MODULO 10
         signal cnt_div_tdhmin :     std_logic; -- MODULO 1
         signal cnt_timer_teclado :  std_logic_vector(18 downto 0); -- MODULO 25000
-        -- para la salida T_DH_MIN no haría falta dado que va con la salida del reloj pero lo optimiza quartus
+
+        signal cnt_2_5ms :         std_logic_vector(16 downto 0); -- MODULO 125000
+        signal cnt_0_5s :          std_logic_vector(7 downto 0); -- MODULO 200
+        
         constant div_6ns : natural:= 2;
         constant div_60ns : natural:= 29;
         constant div_20ns : natural:= 9;
         constant div_2ns : natural:= 1;
+
+        constant div_2_5ms : natural:= 124999;
+        constant div_0_5s : natural:= 199;
 
         begin
 
@@ -143,7 +152,38 @@ use ieee.std_logic_unsigned.all;
                 end if;
             end if;
         end process;
+    
+--------------------------------------------------------------------------
         
+        process (clk, nRst)
+        begin
+            if nRst='0' then
+                cnt_2_5ms<= (others => '0');
+                
+            elsif clk'event and clk='1' then
+                if cnt_2_5ms < div_2_5ms then
+                    cnt_2_5ms <= cnt_2_5ms + 1;
+                else
+                    cnt_2_5ms <= (others => '0');
+                end if;
+            end if;
+        end process;      
+        
+        process (clk, nRst)
+        begin
+            if nRst='0' then 
+            cnt_0_5s <= (others => '0');   
+            elsif clk'event and clk='1' and tic_2_5ms='1' then
+                if cnt_0_5s < div_0_5s  then
+                    cnt_0_5s <= cnt_0_5s + 1;
+                else
+                    cnt_0_5s <= (others => '0');
+                end if;
+            end if; 
+        end process;
+        
+        tic_2_5ms <= '1' when cnt_2_5ms = div_2_5ms else '0';
+        tic_0_5s <= '1' when cnt_0_5s = div_0_5s else '0';
 
     
     end rtl;

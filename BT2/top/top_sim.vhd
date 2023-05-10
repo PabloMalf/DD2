@@ -107,7 +107,9 @@ begin
           tdh_min => tdh_min,
           tacces_max => tacces_max,
           tz_max => tz_max,
-          timer_teclado => timer_teclado);        
+          timer_teclado => timer_teclado,
+          tic_2_5ms => tic_2_5ms,
+          tic_0_5s => tic_0_5s);        
   
   teclado: entity work.ctrl_tec(rtl)
   port map(clk => clk,

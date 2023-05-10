@@ -18,8 +18,8 @@ port(clk           : in std_logic;
      SDO           : buffer std_logic;                      -- Linea SDO
      dato_rx       : buffer std_logic_vector(7 downto 0);   -- Dato que se ha recibido del master
      data_ready    : buffer std_logic;                      -- dato_rx puede ser leido. Se activa durante un pulso de reloj cuando se ha recibido un byte.
-     init_rx       : buffer std_logic;                      -- Indica el inicio de la comunicación
-     modo_3_4_hilos: in     std_logic);                     -- El modulo de logica envia informacion sobre si se debe enviar a 3 o 4 hilos. 0 = 4 hilos (por defecto), 1 = 3 hilos
+     init_rx       : buffer std_logic);                      -- Indica el inicio de la comunicación
+   --  modo_3_4_hilos: in     std_logic);                     -- El modulo de logica envia informacion sobre si se debe enviar a 3 o 4 hilos. 0 = 4 hilos (por defecto), 1 = 3 hilos
 --     data_sent     : buffer std_logic);                     -- se ha enviado el dato
 end entity;
 
@@ -168,11 +168,13 @@ begin
     end if;
   end process;
    
-  SDI <= 'Z' when cnt_send_bit=0 
-          else SDO_no_Z when modo_3_4_hilos = '1' 
-          else 'Z';
+   SDI <= 'Z' ;
+  --when cnt_send_bit=0 
+  --         else SDO_no_Z when modo_3_4_hilos = '1' 
+  --         else 'Z';
   
   SDO <= 'Z' when cnt_send_bit=0 
-          else SDO_no_Z when modo_3_4_hilos /= '1' 
-          else 'Z';
+          else SDO_no_Z ;
+          --when modo_3_4_hilos /= '1' 
+          --else 'Z';
 end rtl;
