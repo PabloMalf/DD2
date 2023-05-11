@@ -19,7 +19,7 @@ port(clk           : in std_logic;
      dato_rx       : buffer std_logic_vector(7 downto 0);   -- Dato que se ha recibido del master
      data_ready    : buffer std_logic;                      -- dato_rx puede ser leido. Se activa durante un pulso de reloj cuando se ha recibido un byte.
      init_rx       : buffer std_logic);                      -- Indica el inicio de la comunicación
-   --  modo_3_4_hilos: in     std_logic);                     -- El modulo de logica envia informacion sobre si se debe enviar a 3 o 4 hilos. 0 = 4 hilos (por defecto), 1 = 3 hilos
+  --   modo_3_4_hilos: in     std_logic);                     -- El modulo de logica envia informacion sobre si se debe enviar a 3 o 4 hilos. 0 = 4 hilos (por defecto), 1 = 3 hilos
 --     data_sent     : buffer std_logic);                     -- se ha enviado el dato
 end entity;
 
@@ -36,6 +36,7 @@ architecture rtl of com_spi is
   
   signal prev_reg_clk: std_logic;                    -- guarda el valor anterior de la señal reg_clk para detectar flancos de subida
   signal flanco_subida_clk_in: std_logic;
+  signal flanco_bajada_clk_in : std_logic;
 --  signal dato_completo: std_logic;
   signal reg_dato_in: std_logic_vector(7 downto 0);  -- lo que se va recibiendo por la linea mas un bit extra que indica si se ha leido todo el byte
   signal cnt_rcv_bit: std_logic_vector (3 downto 0); -- numero de bits que se van recibiendo
@@ -43,7 +44,6 @@ architecture rtl of com_spi is
   signal reg_dato_out: std_logic_vector(7 downto 0); -- guarda el valor de dato_tx
   signal enviando: std_logic;                        -- si está activa, se están enviando datos por la linea SDO_no_Z
   signal cnt_send_bit: std_logic_vector(3 downto 0); -- numero de bits que se han enviado
-  signal desplazar_reg_dato_out: std_logic;          -- se desplaza reg_dato_out para que en su LSB se incluya el valor que se enviara por la linea
     
   signal prev_reg_cs: std_logic;                     -- Para detectar cambios en la linea
 --  signal reg_init_rx: std_logic;                     -- se activa cuando se ha detectado una señal de start, se enviará la señal cuando se reciba el dato completo
@@ -81,14 +81,23 @@ begin
       flanco_subida_clk_in <= '0';
     elsif clk'event and clk = '1' then
       prev_reg_clk <= reg_clk;
-      if reg_clk /= prev_reg_clk and reg_clk = '1' then
+     if reg_clk /= prev_reg_clk and reg_clk = '1' then
         flanco_subida_clk_in <= '1';
       else
         flanco_subida_clk_in <= '0';
       end if;
+      
+--      if reg_clk /= prev_reg_clk and reg_clk = '0' then
+--        flanco_bajada_clk_in <= '1';
+--      else
+--        flanco_bajada_clk_in<= '0';
+--      end if;
     end if;
   end process;
-
+  
+--  flanco_subida_clk_in <= '1' when reg_clk /= prev_reg_clk and reg_clk = '1' else '0';
+  flanco_bajada_clk_in<= '1' when reg_clk /= prev_reg_clk and reg_clk = '0' else '0';
+  
   process (nRst, clk)
   -- Cambios en la linea cs
   begin
@@ -122,23 +131,24 @@ begin
           elsif cnt_rcv_bit = 7 then
             cnt_rcv_bit <= cnt_rcv_bit + 1;
             reg_dato_in <= reg_dato_in(6 downto 0) & reg_SDI;
-            if reg_SDI /= 'Z' then
-              data_ready <= '1';
-            end if;
-          else
-            cnt_rcv_bit <= (0 => '1', others => '0');
-            reg_dato_in <= (others => '0');
-            data_ready <= '0';
+            data_ready <= '1';
+           elsif cnt_rcv_bit = 8 then
+              cnt_rcv_bit <= (0 => '1', others => '0');
           end if;
+        elsif cnt_rcv_bit = 8 then  
+            reg_dato_in <= reg_dato_in(6 downto 0) & reg_SDI;
+            data_ready <= '0';
         else 
           data_ready <= '0';                              -- Solo se debe activar 1 ciclo de reloj
         end if;
+       elsif reg_cs = '1' or data_ready = '1' then
+        cnt_rcv_bit <= (others => '0');
       end if;
     end if;
   end process;
   
   -- Pasa los datos en el orden que los ha recibido
-  dato_rx <= reg_dato_in when cnt_rcv_bit = 8 and reg_dato_in >= 0 else
+  dato_rx <= reg_dato_in when cnt_rcv_bit = 8 and data_ready = '1' and reg_dato_in >= 0 else
              dato_rx;
   
   process(nRst,clk)
@@ -155,7 +165,7 @@ begin
         enviando <= '1';
         cnt_send_bit <= (others => '0');
       elsif enviando = '1' then
-        if cnt_send_bit /= 9 and flanco_subida_clk_in = '1' and reg_SDI = 'Z' then
+        if cnt_send_bit /= 9 and flanco_bajada_clk_in= '1' and reg_SDI = 'Z' then
           cnt_send_bit <= cnt_send_bit + 1;
           reg_dato_out <= reg_dato_out(6 downto 0) & '0';
           SDO_no_Z <= reg_dato_out(7);
@@ -168,13 +178,14 @@ begin
     end if;
   end process;
    
-   SDI <= 'Z' ;
+  SDI <= 'Z' ;
   --when cnt_send_bit=0 
-  --         else SDO_no_Z when modo_3_4_hilos = '1' 
-  --         else 'Z';
+         -- else SDO_no_Z when modo_3_4_hilos = '1' 
+         -- else 'Z';
   
-  SDO <= 'Z' when cnt_send_bit=0 
-          else SDO_no_Z ;
-          --when modo_3_4_hilos /= '1' 
-          --else 'Z';
+  SDO <= 'Z' when reg_SDI /= 'Z'
+         else SDO_no_Z when flanco_bajada_clk_in = '1'
+         else SDO;           -- when flanco_bajada_clk_in= '0'
+			 --when modo_3_4_hilos /= '1' 
+       --   else 'Z';
 end rtl;

@@ -30,7 +30,11 @@ architecture struct of SPI is
     signal dato_in_reg : std_logic_vector(7 downto 0);
 
     signal dato_out_reg : std_logic_vector(7 downto 0);
-
+    
+    signal tds_min : std_logic;
+    signal tdh_min : std_logic;
+    signal tacces_max : std_logic;
+    signal tz_max : std_logic;
     
 begin
  com_SPI: entity work.com_spi(rtl)
@@ -73,5 +77,12 @@ begin
             ena_out => ena_out,
             dato_reg => dato_out_reg);
 
+--   timer: entity work.timer(rtl)
+--     port map(clk => clk,
+--             nRst => nRst,
+--             tds_min => tds_min,
+--             tdh_min => tdh_min,
+--             tacces_max => tacces_max,
+--             tz_max => tz_max);
 
 end struct;
