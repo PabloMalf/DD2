@@ -44,10 +44,13 @@ architecture rtl of com_spi is
   signal reg_dato_out: std_logic_vector(7 downto 0); -- guarda el valor de dato_tx
   signal enviando: std_logic;                        -- si está activa, se están enviando datos por la linea SDO_no_Z
   signal cnt_send_bit: std_logic_vector(3 downto 0); -- numero de bits que se han enviado
+  signal desplazar_reg_dato_out: std_logic;          -- se desplaza reg_dato_out para que en su LSB se incluya el valor que se enviara por la linea
     
   signal prev_reg_cs: std_logic;                     -- Para detectar cambios en la linea
 --  signal reg_init_rx: std_logic;                     -- se activa cuando se ha detectado una señal de start, se enviará la señal cuando se reciba el dato completo
   signal SDO_no_Z: std_logic;
+  signal buf_data_tx: std_logic_vector (7 downto 0); -- si se esta enviando un dato y se pide que se envíe otro, se guarda en este buffer hasta que se pueda enviar.
+  signal hay_datos_en_buf_retransmision: std_logic;
 begin
   
   process(nRst, clk)
@@ -123,7 +126,7 @@ begin
       data_ready <= '0';
     elsif clk'event and clk = '1' then
       if reg_cs = '0' then                                 -- Se detecta un nivel bajo en la linea de cs: El master va a enviar datos
-        if flanco_subida_clk_in = '1' then                             -- Hay que recoger el valor de la linea SDI
+        if flanco_subida_clk_in = '1' and reg_SDI /= 'Z' then                             -- Hay que recoger el valor de la linea SDI
           if cnt_rcv_bit < 7 then
             cnt_rcv_bit <= cnt_rcv_bit + 1;
             reg_dato_in <= reg_dato_in(6 downto 0) & reg_SDI;
@@ -158,21 +161,32 @@ begin
       reg_dato_out <= (others => '0');
       enviando <= '0';
       cnt_send_bit <= (others => '0');
-      SDO_no_Z <= '1';
+      SDO_no_Z <= 'Z';
+      hay_datos_en_buf_retransmision<= '0';
     elsif clk'event and clk = '1' then
-      if init_tx = '1' then
+      if reg_cs /= '0' then
+        cnt_send_bit <= (others => '0'); 
+      elsif init_tx = '1' and enviando = '0' then
         reg_dato_out <= dato_tx;
         enviando <= '1';
-        cnt_send_bit <= (others => '0');
-      elsif enviando = '1' then
-        if cnt_send_bit /= 9 and flanco_bajada_clk_in= '1' and reg_SDI = 'Z' then
+      elsif init_tx = '1' and enviando = '1' then -- se esta enviando un dato, se guarda el siguiente en un buffer.
+        hay_datos_en_buf_retransmision <= '1';
+        buf_data_tx <= dato_tx; 
+      end if;
+      
+      if enviando = '1' then
+        if cnt_send_bit < 8 and flanco_bajada_clk_in= '1' and reg_SDI = 'Z' then
           cnt_send_bit <= cnt_send_bit + 1;
           reg_dato_out <= reg_dato_out(6 downto 0) & '0';
           SDO_no_Z <= reg_dato_out(7);
-        elsif cnt_send_bit = 9 then
-          cnt_send_bit <= (others => '0');
-          enviando <= '0';
-          SDO_no_Z <= '1';
+        elsif cnt_send_bit = 8 and flanco_bajada_clk_in= '1' and reg_SDI = 'Z' then
+          if hay_datos_en_buf_retransmision = '1' then
+            reg_dato_out<= buf_data_tx;
+            cnt_send_bit <= (0 => '1', others => '0');
+          else
+            enviando <= '0';
+            cnt_send_bit <= (others => '0');
+          end if;
         end if;
       end if;
     end if;
@@ -183,9 +197,9 @@ begin
          -- else SDO_no_Z when modo_3_4_hilos = '1' 
          -- else 'Z';
   
-  SDO <= 'Z' when reg_SDI /= 'Z'
+  SDO <= 'Z' when reg_SDI /= 'Z' or reg_cs /= '0' or cnt_send_bit= 0
          else SDO_no_Z when flanco_bajada_clk_in = '1'
-         else SDO;           -- when flanco_bajada_clk_in= '0'
+         else SDO;
 			 --when modo_3_4_hilos /= '1' 
        --   else 'Z';
 end rtl;

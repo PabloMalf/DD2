@@ -42,10 +42,11 @@ architecture rtl of logica_spi is
   signal contador: std_logic_vector (4 downto 0);
   --Explicacion contador multiplo: para las tramas single carrier la primera y segunda trama son address,
   --la sigiente es dato, y luego se vuelve a repetir, es decir cada 3.
-  signal contador_multiplo : std_logic_vector (4 downto 0); --suma cada 3 de contador (para single carrier)
+  signal contador_multiplo : std_logic_vector (4 downto 0); --suma cada 3 de contadoto =r (para single carrier)
   signal adr_com_actual : std_logic_vector(15 downto 0); --direccion de 16 bits del adr que viene del com_spi
   
   signal nWR_actual: std_logic; -- Guarda el estado de lectura/escritura. Es el bit menos significativo de adr_com
+  signal cambio_contador: std_logic_vector (1 downto 0); --indica si hay que cambiar el contador
 begin
   --PREGUNTAS PROFE:
         --Se puede usar la funcion reverse???? respuesta: si pero hayq ue tener cuidado por si no es sintetizable
@@ -141,7 +142,9 @@ begin
       dato_in_reg<= (others => '0');
       nWR<= '1';
       ena_in <= '0';
+      cambio_contador <= (others => '0');
     elsif clk'event and clk = '1' then
+     
       if estado_escritura=streaming and dato_ready='1' and  nWR_actual='0' and contador>=2 then   --CASO STREAMING ESCRITURA
           nWR<= '0';                                                    
           adr_reg<= adr_com_actual(4 downto 0); --(5 downto 1);                     --Escribo la direccion y el dato para registro
@@ -160,20 +163,46 @@ begin
           else
             dato_in_reg<= dato_rx(7) & dato_rx(6) & dato_rx(5) & dato_rx(4) & dato_rx(3) & dato_rx(2) & dato_rx(1) & dato_rx(0);
           end if;
-      elsif dato_ready='1' and  nWR_actual='1' and estado_escritura=streaming and contador = 2 then                       --CASO LECTURA  PARA REGISTROS
+
+      elsif cambio_contador=0 and  nWR_actual='1' and estado_escritura=streaming and contador = 2 then                       --CASO LECTURA  PARA REGISTROS
+          cambio_contador<=cambio_contador+1;
           nWR<= '1';
           ena_in <= '1';
           adr_reg<= adr_com_actual(4 downto 0);--(5 downto 1); -- en este caso no hace falta igualarlo a adr_com_actual dado que da igual si es ascendente o descendente
-     elsif dato_ready='1' and   adr_com(15)='1' and estado_escritura=single and contador_multiplo = 1 then                       --CASO LECTURA  PARA REGISTROS
+
+      elsif cambio_contador=1 and nWR_actual='1' and estado_escritura=streaming and contador = 2 then
+          ena_in <= '0'; 
+          cambio_contador<=cambio_contador+1;
+
+      elsif cambio_contador=2 and nWR_actual='1' and estado_escritura=streaming and contador = 2 then       
+          cambio_contador<=cambio_contador+1;
+          nWR<= '1';
+          ena_in <= '1'; 
+
+          if orden_escritura=ascendente then
+            adr_reg<= adr_com_actual(4 downto 0)+1;
+          else
+            adr_reg<= adr_com_actual(4 downto 0)-1;
+          end if;   
+
+      elsif cambio_contador=3 and nWR_actual='1' and estado_escritura=streaming and contador = 2 then
+        ena_in <= '0'; 
+                          
+     elsif cambio_contador=0 and   adr_com(15)='1' and estado_escritura=single and contador_multiplo = 2 then                       --CASO LECTURA  PARA REGISTROS
+        cambio_contador<=cambio_contador+1;
           nWR<= '1'; 
           ena_in <= '1';
           adr_reg<= adr_com(4 downto 0);
-     else 
+      else 
         ena_in <= '0';
+      end if;
+      if dato_ready='1' then   --CASO LESCTURA PARA QUE DURE UN CILO
+      cambio_contador <= (others => '0');
       end if;
     end if;
   end process;
-  
+  -- ena_in<='1' cambio_contador=0 or cambio_contador=2 else '0';
+  -- nWR<='1';
 --- INFORMACION PARA COMUNICACION
     process(clk, nRst)
     begin

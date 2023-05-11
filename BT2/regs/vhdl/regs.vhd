@@ -78,7 +78,7 @@ architecture rtl of regs is
             ena_out <= '0';
         
         elsif clk'event and clk='1' then
-            if nWR= '0' and ena_in='1' then
+            if nWR= '0' and ena_in='1' then -- nWR= '0' es decir, escritura
                 case adr_reg is
                     when "00000" => reg0 <= dato_in_reg;
                     when "00001" => reg1 <= dato_in_reg;
@@ -101,9 +101,9 @@ architecture rtl of regs is
                     when others => reg8 <= dato_in_reg;
 
                 end case;
-                ena_out <= '1';
+                ena_out <= '0';
 
-            elsif nWR='1' and ena_in='1' then  -- es decir, nWR='1'
+            elsif nWR='1' and ena_in='1' then  --  es decir, lectura
 
                 case adr_reg is
                     when "00000" => dato_reg <= reg0;
