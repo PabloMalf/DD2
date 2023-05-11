@@ -79,11 +79,11 @@ begin
       end case;
       case estado_bit is -- controla MSB o LSB
         when MSB =>
-            if adr_com_actual = X"0000" and dato_rx(6)='1' and dato_rx(1)= '1' and dato_ready='1' and orden_escritura = descendente then
+            if adr_com_actual = X"0000" and dato_rx(6)='1' and dato_rx(1)= '1' and dato_ready='1'  then
               estado_bit <= LSB;
             end if;
         when LSB =>
-            if adr_com_actual = X"0000" and dato_rx(6)='0' and dato_rx(1)= '0' and dato_ready='1' and orden_escritura = descendente then
+            if adr_com_actual = X"0000" and dato_rx(6)='0' and dato_rx(1)= '0' and dato_ready='1'  then
               estado_bit <= MSB;
             end if;
         
@@ -152,7 +152,7 @@ begin
           if estado_bit=MSB then 
             dato_in_reg<= dato_rx;
           else
-            dato_in_reg<= dato_rx(7) & dato_rx(6) & dato_rx(5) & dato_rx(4) & dato_rx(3) & dato_rx(2) & dato_rx(1) & dato_rx(0);
+            dato_in_reg<= dato_rx(0) & dato_rx(1) & dato_rx(2) & dato_rx(3) & dato_rx(4) & dato_rx(5) & dato_rx(6) & dato_rx(7);
           end if;
       elsif estado_escritura=single and  contador_multiplo = 1 and  dato_ready = '1' and  adr_com(15)= '0' then --CASO SINGLE ESCRITURA
            nWR<= '0';
@@ -161,7 +161,7 @@ begin
            if estado_bit = MSB then 
             dato_in_reg <= dato_rx;
           else
-            dato_in_reg<= dato_rx(7) & dato_rx(6) & dato_rx(5) & dato_rx(4) & dato_rx(3) & dato_rx(2) & dato_rx(1) & dato_rx(0);
+          dato_in_reg<= dato_rx(0) & dato_rx(1) & dato_rx(2) & dato_rx(3) & dato_rx(4) & dato_rx(5) & dato_rx(6) & dato_rx(7);
           end if;
 
       elsif cambio_contador=0 and  nWR_actual='1' and estado_escritura=streaming and contador = 2 then                       --CASO LECTURA  PARA REGISTROS

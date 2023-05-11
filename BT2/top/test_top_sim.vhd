@@ -132,14 +132,7 @@ begin
   mode_3_4_h  <= '1';
   str_sgl_ins <= '0';
 
--- CTRL_MS
-  set_modo_reg_conf (tic_tecla, tecla, info_disp, clk);
-  editar_reg_conf (tic_tecla, tecla, info_disp, reg_tx, X"0", X"24", clk);
-  pulsar(tic_tecla, tecla, X"E" , clk);  --Escribir
 
-  wait until nCSB'event and nCSB = '1';
-  wait for 50* Tclk;
-  wait until clk'event and clk = '1';
 
 
 -- CTRL_MS
@@ -150,6 +143,68 @@ begin
   wait for 50* Tclk;
   wait until clk'event and clk = '1';
   
+  -- CTRL_MS
+  set_modo_reg_op (tic_tecla, tecla, info_disp, clk);
+  editar_reg_op (tic_tecla, tecla, info_disp, reg_tx, X"1234", clk);
+  pulsar(tic_tecla, tecla, X"E" , clk);  --Escribir
+    report "Enviando 1234";
+  wait until nCSB'event and nCSB = '1';
+  wait for 50* Tclk;
+  wait until clk'event and clk = '1';
+
+  -- CTRL_MS
+  set_modo_reg_conf (tic_tecla, tecla, info_disp, clk);
+  editar_reg_conf (tic_tecla, tecla, info_disp, reg_tx, X"0", X"24", clk);
+  pulsar(tic_tecla, tecla, X"E" , clk);  --Escribir
+
+  wait until nCSB'event and nCSB = '1';
+  wait for 50* Tclk;
+  wait until clk'event and clk = '1';
+report "EStado ascendente";
+ -- CTRL_MS
+ set_modo_reg_op (tic_tecla, tecla, info_disp, clk);
+ editar_reg_op (tic_tecla, tecla, info_disp, reg_tx, X"5678", clk);
+ pulsar(tic_tecla, tecla, X"E" , clk);  --Escribir
+   report "Enviando 5678";
+ wait until nCSB'event and nCSB = '1';
+ wait for 50* Tclk;
+ wait until clk'event and clk = '1';
+  -- CTRL_MS
+  set_modo_reg_conf (tic_tecla, tecla, info_disp, clk);
+  editar_reg_conf (tic_tecla, tecla, info_disp, reg_tx, X"0", X"42", clk);
+  pulsar(tic_tecla, tecla, X"E" , clk);  --Escribir
+
+  wait until nCSB'event and nCSB = '1';
+  wait for 50* Tclk;
+  wait until clk'event and clk = '1';
+report "EStado LSB y ascendente";
+ -- CTRL_MS
+ set_modo_reg_op (tic_tecla, tecla, info_disp, clk);
+ editar_reg_op (tic_tecla, tecla, info_disp, reg_tx, X"9ABC", clk);
+ pulsar(tic_tecla, tecla, X"E" , clk);  --Escribir
+   report "Enviando 9ABC";
+ wait until nCSB'event and nCSB = '1';
+ wait for 50* Tclk;
+ wait until clk'event and clk = '1';
+
+  -- CTRL_MS
+  set_modo_reg_conf (tic_tecla, tecla, info_disp, clk);
+  editar_reg_conf (tic_tecla, tecla, info_disp, reg_tx, X"1", X"80", clk);
+  pulsar(tic_tecla, tecla, X"E" , clk);  --Escribir
+
+  wait until nCSB'event and nCSB = '1';
+  wait for 50* Tclk;
+  wait until clk'event and clk = '1';
+report "EStado single y MSB";
+ -- CTRL_MS
+ set_modo_reg_op (tic_tecla, tecla, info_disp, clk);
+ editar_reg_op (tic_tecla, tecla, info_disp, reg_tx, X"F012", clk);
+ pulsar(tic_tecla, tecla, X"E" , clk);  --Escribir
+   report "Enviando F012";
+ wait until nCSB'event and nCSB = '1';
+ wait for 50* Tclk;
+ wait until clk'event and clk = '1';
+
   assert false
   report "Fin del test"
   severity failure;
