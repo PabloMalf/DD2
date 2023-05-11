@@ -81,24 +81,13 @@ begin
   -- se encarga de muestrear la linea clk_in para detectar flancos.
   begin
     if nRst = '0' then
-      flanco_subida_clk_in <= '0';
+      prev_reg_clk <= '0';
     elsif clk'event and clk = '1' then
       prev_reg_clk <= reg_clk;
-     if reg_clk /= prev_reg_clk and reg_clk = '1' then
-        flanco_subida_clk_in <= '1';
-      else
-        flanco_subida_clk_in <= '0';
-      end if;
-      
---      if reg_clk /= prev_reg_clk and reg_clk = '0' then
---        flanco_bajada_clk_in <= '1';
---      else
---        flanco_bajada_clk_in<= '0';
---      end if;
     end if;
   end process;
   
---  flanco_subida_clk_in <= '1' when reg_clk /= prev_reg_clk and reg_clk = '1' else '0';
+  flanco_subida_clk_in <= '1' when reg_clk /= prev_reg_clk and reg_clk = '1' else '0';
   flanco_bajada_clk_in<= '1' when reg_clk /= prev_reg_clk and reg_clk = '0' else '0';
   
   process (nRst, clk)
