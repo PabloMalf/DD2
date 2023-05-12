@@ -7,7 +7,7 @@ entity SPI is
     clk  : in std_logic;
     nRst : in std_logic;
     SDI  : inout std_logic;
-    CS   : in std_logic;
+    nCS   : in std_logic;
     SDO  : buffer std_logic;
     sclk : in std_logic
     );
@@ -42,7 +42,7 @@ begin
     clk => clk,
     nRst => nRst,
     SDI => SDI,
-    cs_in => CS,
+    nCS => nCS,
     SDO => SDO,
     clk_in => sclk,
     init_tx => init_tx,

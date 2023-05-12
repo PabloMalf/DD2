@@ -20,7 +20,7 @@ entity top_sim is
 end top_sim;
 
 architecture estructural of top_sim is
-  signal CS: std_logic;
+  signal nCS: std_logic;
   signal sclk: std_logic;
   
   signal start: std_logic;
@@ -48,7 +48,7 @@ begin
   port map(clk  => clk,
            nRst => nRst,
            SDI  => SDIO_s,
-           CS   => CS,
+           nCS   => nCS,
            SDO  => SDO_s,
            sclk => sclk
            );
@@ -82,7 +82,7 @@ begin
            dato_rd => dato_rd,
            ena_rd => ena_rd,
            rdy => rdy,
-           nCS => CS,
+           nCS => nCS,
            SPC => sclk,
            SDI => SDO_m,         -- ???
            SDIO => SDIO_m
@@ -103,10 +103,6 @@ begin
   timer: entity work.timer(rtl)
   port map(clk => clk,
           nRst => nRst,
-          tds_min => tds_min,
-          tdh_min => tdh_min,
-          tacces_max => tacces_max,
-          tz_max => tz_max,
           timer_teclado => timer_teclado,
           tic_2_5ms => tic_2_5ms,
           tic_0_5s => tic_0_5s);        

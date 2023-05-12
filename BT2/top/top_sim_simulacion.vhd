@@ -20,7 +20,7 @@ entity top_sim is
 end top_sim;
 
 architecture estructural of top_sim is
-  signal CS: std_logic;
+  signal nCS: std_logic;
   signal sclk: std_logic;
   
   signal start: std_logic;
@@ -48,7 +48,7 @@ begin
   port map(clk  => clk,
            nRst => nRst,
            SDI  => SDIO_s,
-           CS   => CS,
+           nCS   => nCS,
            SDO  => SDO_s,
            sclk => sclk
            );
@@ -82,7 +82,7 @@ begin
            dato_rd => dato_rd,
            ena_rd => ena_rd,
            rdy => rdy,
-           nCS => CS,
+           nCS => nCS,
            SPC => sclk,
            SDI => SDO_m,         -- ???
            SDIO => SDIO_m

@@ -10,7 +10,7 @@ use ieee.std_logic_unsigned.all;
 entity com_spi is
 port(clk           : in std_logic;
      nRst          : in std_logic;
-     cs_in         : in std_logic;                          -- Linea Chip Select
+     nCS           : in std_logic;                          -- Linea Chip Select
      clk_in        : in std_logic;                          -- Linea CLK
      dato_tx       : in std_logic_vector(7 downto 0);       -- Dato que el esclavo quiere mandar por la linea
      init_tx       : in std_logic;                          -- Informa de que el dato es nuevo
@@ -53,29 +53,33 @@ architecture rtl of com_spi is
   signal hay_datos_en_buf_retransmision: std_logic;
 begin
   
-  process(nRst, clk)
+--  process(nRst, clk)
   -- doble flip-flop
-  begin
-    if nRst = '0' then
-      sclk_T1 <= '0';
-      reg_clk <= '0';
+--  begin
+--    if nRst = '0' then
+  --     sclk_T1 <= '0';
+  --     reg_clk <= '0';
       
-      cs_T1 <= '0';
-      reg_cs <= '0';
+  --     cs_T1 <= '0';
+  --     reg_cs <= '0';
       
-      SDI_T1 <= '0';
-      reg_SDI <= '0';
-    elsif clk'event and clk = '1' then
-      sclk_T1 <= clk_in;
-      reg_clk <= sclk_T1;
-      
-      cs_T1  <= cs_in;
-      reg_cs <= cs_T1;
-      
-      SDI_T1  <= SDI;
-      reg_SDI <= SDI_T1;
-    end if;
-  end process;
+  --     SDI_T1 <= '0';
+  --     reg_SDI <= '0';
+  --   elsif clk'event and clk = '1' then
+  --     sclk_T1 <= clk_in;
+  --     reg_clk <= sclk_T1;
+
+  --     cs_T1  <= nCS;
+  --     reg_cs <= cs_T1;
+
+  --     SDI_T1  <= SDI;
+  --     reg_SDI <= SDI_T1;
+  --   end if;
+  -- end process;
+
+  reg_clk <= clk_in;
+  reg_cs <= nCS;
+  reg_SDI <= SDI;
 
   process (nRst, clk)
   -- se encarga de muestrear la linea clk_in para detectar flancos.
@@ -197,7 +201,7 @@ begin
     end if;
   end process;
    
-  SDI <= 'Z' ;
+ SDI <= 'Z' ;
   --when cnt_send_bit=0 
          -- else SDO_no_Z when modo_3_4_hilos = '1' 
          -- else 'Z';

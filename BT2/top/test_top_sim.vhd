@@ -30,7 +30,7 @@ architecture test of test_top is
   signal seg:         std_logic_vector(7 downto 0);
   signal mux_disp:    std_logic_vector(3 downto 0); 
 
-  signal nCSB:      std_logic;
+  signal nCS:      std_logic;
   signal info_disp: std_logic_vector(2 downto 0);
   signal reg_tx:    std_logic_vector(15 downto 0); 
 
@@ -70,7 +70,7 @@ process
 begin
 
     -- Inicializacion de los spies 
-    init_signal_spy("/test_top/dut/CS", "/nCSB");
+    init_signal_spy("/test_top/dut/nCS", "/nCS");
     init_signal_spy("/test_top/dut/info_disp", "/info_disp");
     init_signal_spy("/test_top/dut/reg_tx", "/reg_tx");
 
@@ -103,7 +103,7 @@ begin
  editar_reg_op (tic_tecla, tecla, info_disp, reg_tx, X"0003", clk);
  pulsar(tic_tecla, tecla, X"E" , clk);  --Escribir
    report "Enviando 0003";
- wait until nCSB'event and nCSB = '1';
+ wait until nCS'event and nCS = '1';
  wait for 50* Tclk;
  wait until clk'event and clk = '1';
 
@@ -111,7 +111,7 @@ begin
   pulsar(tic_tecla, tecla, X"F" , clk);  --leer
     report "Pulsada la F";
     report "leemos 0003";
-    wait until nCSB'event and nCSB = '1';
+    wait until nCS'event and nCS = '1';
   wait for 50* Tclk;
   wait until clk'event and clk = '1';
 
@@ -120,7 +120,7 @@ begin
   editar_reg_op (tic_tecla, tecla, info_disp, reg_tx, X"AAAA", clk);
   pulsar(tic_tecla, tecla, X"E" , clk);  --Escribir
 
-  wait until nCSB'event and nCSB = '1';
+  wait until nCS'event and nCS = '1';
   wait for 50* Tclk;
   wait until clk'event and clk = '1';
 
@@ -136,7 +136,7 @@ begin
 -- CTRL_MS
   pulsar(tic_tecla, tecla, X"F" , clk);  --Leer 
 
-  wait until nCSB'event and nCSB = '1';
+  wait until nCS'event and nCS = '1';
   wait for 50* Tclk;
   wait until clk'event and clk = '1';
 
@@ -155,7 +155,7 @@ begin
   set_modo_reg_op (tic_tecla, tecla, info_disp, clk);
   pulsar(tic_tecla, tecla, X"F" , clk);  --leer
     report "Pulsada la F";
-    wait until nCSB'event and nCSB = '1';
+    wait until nCS'event and nCS = '1';
   wait for 50* Tclk;
   wait until clk'event and clk = '1';
   
@@ -164,7 +164,7 @@ begin
   editar_reg_op (tic_tecla, tecla, info_disp, reg_tx, X"1234", clk);
   pulsar(tic_tecla, tecla, X"E" , clk);  --Escribir
     report "Enviando 1234";
-  wait until nCSB'event and nCSB = '1';
+  wait until nCS'event and nCS = '1';
   wait for 50* Tclk;
   wait until clk'event and clk = '1';
 
@@ -172,7 +172,7 @@ begin
   pulsar(tic_tecla, tecla, X"F" , clk);  --leer
     report "Pulsada la F";
     report "leemos 1234";
-    wait until nCSB'event and nCSB = '1';
+    wait until nCS'event and nCS = '1';
   wait for 50* Tclk;
   wait until clk'event and clk = '1';
   
@@ -182,7 +182,7 @@ begin
   editar_reg_conf (tic_tecla, tecla, info_disp, reg_tx, X"0", X"24", clk);
   pulsar(tic_tecla, tecla, X"E" , clk);  --Escribir
 
-  wait until nCSB'event and nCSB = '1';
+  wait until nCS'event and nCS = '1';
   wait for 50* Tclk;
   wait until clk'event and clk = '1';
 report "EStado ascendente";
@@ -191,7 +191,7 @@ report "EStado ascendente";
  editar_reg_op (tic_tecla, tecla, info_disp, reg_tx, X"5678", clk);
  pulsar(tic_tecla, tecla, X"E" , clk);  --Escribir
    report "Enviando 5678";
- wait until nCSB'event and nCSB = '1';
+ wait until nCS'event and nCS = '1';
  wait for 50* Tclk;
  wait until clk'event and clk = '1';
 
@@ -199,7 +199,7 @@ report "EStado ascendente";
   pulsar(tic_tecla, tecla, X"F" , clk);  --leer
     report "Pulsada la F";
     report "leemos 5678";
-    wait until nCSB'event and nCSB = '1';
+    wait until nCS'event and nCS = '1';
   wait for 50* Tclk;
   wait until clk'event and clk = '1';
 
@@ -208,7 +208,7 @@ report "EStado ascendente";
   editar_reg_conf (tic_tecla, tecla, info_disp, reg_tx, X"0", X"42", clk);
   pulsar(tic_tecla, tecla, X"E" , clk);  --Escribir
 
-  wait until nCSB'event and nCSB = '1';
+  wait until nCS'event and nCS = '1';
   wait for 50* Tclk;
   wait until clk'event and clk = '1';
 report "EStado LSB y ascendente";
@@ -217,7 +217,7 @@ report "EStado LSB y ascendente";
  editar_reg_op (tic_tecla, tecla, info_disp, reg_tx, X"9ABC", clk);
  pulsar(tic_tecla, tecla, X"E" , clk);  --Escribir
    report "Enviando 9ABC";
- wait until nCSB'event and nCSB = '1';
+ wait until nCS'event and nCS = '1';
  wait for 50* Tclk;
  wait until clk'event and clk = '1';
 
@@ -225,7 +225,7 @@ report "EStado LSB y ascendente";
   pulsar(tic_tecla, tecla, X"F" , clk);  --leer
     report "Pulsada la F";
     report "leemos 9ABC";
-    wait until nCSB'event and nCSB = '1';
+    wait until nCS'event and nCS = '1';
   wait for 50* Tclk;
   wait until clk'event and clk = '1';
 
@@ -234,7 +234,7 @@ report "EStado LSB y ascendente";
   editar_reg_conf (tic_tecla, tecla, info_disp, reg_tx, X"1", X"80", clk);
   pulsar(tic_tecla, tecla, X"E" , clk);  --Escribir
 
-  wait until nCSB'event and nCSB = '1';
+  wait until nCS'event and nCS = '1';
   wait for 50* Tclk;
   wait until clk'event and clk = '1';
 report "EStado single y MSB";
@@ -243,7 +243,7 @@ report "EStado single y MSB";
  editar_reg_op (tic_tecla, tecla, info_disp, reg_tx, X"F012", clk);
  pulsar(tic_tecla, tecla, X"E" , clk);  --Escribir
    report "Enviando F012";
- wait until nCSB'event and nCSB = '1';
+ wait until nCS'event and nCS = '1';
  wait for 50* Tclk;
  wait until clk'event and clk = '1';
 
@@ -251,7 +251,7 @@ report "EStado single y MSB";
   pulsar(tic_tecla, tecla, X"F" , clk);  --leer
     report "Pulsada la F";
     report "leemos F012";
-    wait until nCSB'event and nCSB = '1';
+    wait until nCS'event and nCS = '1';
   wait for 50* Tclk;
   wait until clk'event and clk = '1';
 
