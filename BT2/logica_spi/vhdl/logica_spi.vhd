@@ -237,6 +237,7 @@ begin
       elsif clk'event and clk = '1' then
         if init_rx='1'  then   
           contador <= (others => '0');
+          contador_multiplo <= (others => '0');
         elsif dato_ready='1' then
           contador <= contador+1;
           if contador_multiplo/=2 then 

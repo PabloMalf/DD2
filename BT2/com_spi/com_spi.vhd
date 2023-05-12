@@ -154,7 +154,8 @@ begin
       hay_datos_en_buf_retransmision<= '0';
     elsif clk'event and clk = '1' then
       if reg_cs /= '0' then
-        cnt_send_bit <= (others => '0'); 
+        cnt_send_bit <= (others => '0');
+        enviando <= '0';
       elsif init_tx = '1' and enviando = '0' then
         reg_dato_out <= dato_tx;
         enviando <= '1';
@@ -164,11 +165,11 @@ begin
       end if;
       
       if enviando = '1' then
-        if cnt_send_bit < 7 and flanco_bajada_clk_in= '1' and reg_SDI = 'Z' then
+        if cnt_send_bit < 7 and flanco_bajada_clk_in= '1' then
           cnt_send_bit <= cnt_send_bit + 1;
           reg_dato_out <= reg_dato_out(6 downto 0) & '0';
           SDO_no_Z <= reg_dato_out(7);
-        elsif cnt_send_bit = 7 and flanco_bajada_clk_in= '1' and reg_SDI = 'Z' then
+        elsif cnt_send_bit = 7 and flanco_bajada_clk_in= '1' then
           if hay_datos_en_buf_retransmision = '1' then
             reg_dato_out<= buf_data_tx;
           else
@@ -176,16 +177,19 @@ begin
           end if;
           cnt_send_bit <= cnt_send_bit + 1;
           SDO_no_Z <= reg_dato_out(7);
-        elsif cnt_send_bit = 8 and flanco_bajada_clk_in= '1' and reg_SDI = 'Z' then
+        elsif cnt_send_bit = 8 and flanco_bajada_clk_in= '1' then
           cnt_send_bit <= (0 => '1', others => '0');
           SDO_no_Z <= reg_dato_out(7);
           reg_dato_out <= reg_dato_out(6 downto 0) & '0';
           hay_datos_en_buf_retransmision <= '0';
           buf_data_tx <= (others => '0');
-            if hay_datos_en_buf_retransmision = '0' then
-              enviando <= '0';
-            end if;
+            
+         elsif cnt_send_bit = 8 and flanco_subida_clk_in = '1' then
+          if hay_datos_en_buf_retransmision = '0' then
+            enviando <= '0';
+            cnt_send_bit <= (others => '0');
           end if;
+        end if;
         --elsif cnt_send_bit= 8 and flanco_bajada_clk_in= '1' and reg_SDI = 'Z'  then
           
         
@@ -198,7 +202,7 @@ begin
          -- else SDO_no_Z when modo_3_4_hilos = '1' 
          -- else 'Z';
   
-  SDO <= 'Z' when reg_SDI /= 'Z' or reg_cs /= '0' or cnt_send_bit= 0
+  SDO <= 'Z' when reg_SDI /= 'Z' or reg_cs /= '0' or cnt_send_bit= 0 
          else SDO_no_Z when flanco_bajada_clk_in = '1'
          else SDO;
 			 --when modo_3_4_hilos /= '1' 

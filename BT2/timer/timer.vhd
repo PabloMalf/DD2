@@ -173,12 +173,14 @@ use ieee.std_logic_unsigned.all;
         begin
             if nRst='0' then 
             cnt_0_5s <= (others => '0');   
-            elsif clk'event and clk='1' and tic_2_5ms='1' then
+            elsif clk'event and clk='1' then
+				  if tic_2_5ms='1' then
                 if cnt_0_5s < div_0_5s  then
                     cnt_0_5s <= cnt_0_5s + 1;
                 else
                     cnt_0_5s <= (others => '0');
                 end if;
+					 end if;
             end if; 
         end process;
         
