@@ -182,7 +182,9 @@ begin
           reg_dato_out <= reg_dato_out(6 downto 0) & '0';
           hay_datos_en_buf_retransmision <= '0';
           buf_data_tx <= (others => '0');
-          
+            if hay_datos_en_buf_retransmision = '0' then
+              enviando <= '0';
+            end if;
           end if;
         --elsif cnt_send_bit= 8 and flanco_bajada_clk_in= '1' and reg_SDI = 'Z'  then
           

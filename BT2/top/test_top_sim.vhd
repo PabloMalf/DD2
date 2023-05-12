@@ -98,6 +98,23 @@ begin
   mode_3_4_h  <= '1';
   str_sgl_ins <= '0';
 
+    -- CTRL_MS
+ set_modo_reg_op (tic_tecla, tecla, info_disp, clk);
+ editar_reg_op (tic_tecla, tecla, info_disp, reg_tx, X"0003", clk);
+ pulsar(tic_tecla, tecla, X"E" , clk);  --Escribir
+   report "Enviando 0003";
+ wait until nCSB'event and nCSB = '1';
+ wait for 50* Tclk;
+ wait until clk'event and clk = '1';
+
+ set_modo_reg_op (tic_tecla, tecla, info_disp, clk);
+  pulsar(tic_tecla, tecla, X"F" , clk);  --leer
+    report "Pulsada la F";
+    report "leemos 0003";
+    wait until nCSB'event and nCSB = '1';
+  wait for 50* Tclk;
+  wait until clk'event and clk = '1';
+
 -- CTRL_MS
   set_modo_reg_op (tic_tecla, tecla, info_disp, clk);
   editar_reg_op (tic_tecla, tecla, info_disp, reg_tx, X"AAAA", clk);
@@ -134,7 +151,6 @@ begin
 
 
 
-
 -- CTRL_MS
   set_modo_reg_op (tic_tecla, tecla, info_disp, clk);
   pulsar(tic_tecla, tecla, X"F" , clk);  --leer
@@ -151,6 +167,15 @@ begin
   wait until nCSB'event and nCSB = '1';
   wait for 50* Tclk;
   wait until clk'event and clk = '1';
+
+  set_modo_reg_op (tic_tecla, tecla, info_disp, clk);
+  pulsar(tic_tecla, tecla, X"F" , clk);  --leer
+    report "Pulsada la F";
+    report "leemos 1234";
+    wait until nCSB'event and nCSB = '1';
+  wait for 50* Tclk;
+  wait until clk'event and clk = '1';
+  
 
   -- CTRL_MS
   set_modo_reg_conf (tic_tecla, tecla, info_disp, clk);
@@ -169,6 +194,15 @@ report "EStado ascendente";
  wait until nCSB'event and nCSB = '1';
  wait for 50* Tclk;
  wait until clk'event and clk = '1';
+
+ set_modo_reg_op (tic_tecla, tecla, info_disp, clk);
+  pulsar(tic_tecla, tecla, X"F" , clk);  --leer
+    report "Pulsada la F";
+    report "leemos 5678";
+    wait until nCSB'event and nCSB = '1';
+  wait for 50* Tclk;
+  wait until clk'event and clk = '1';
+
   -- CTRL_MS
   set_modo_reg_conf (tic_tecla, tecla, info_disp, clk);
   editar_reg_conf (tic_tecla, tecla, info_disp, reg_tx, X"0", X"42", clk);
@@ -187,6 +221,14 @@ report "EStado LSB y ascendente";
  wait for 50* Tclk;
  wait until clk'event and clk = '1';
 
+ set_modo_reg_op (tic_tecla, tecla, info_disp, clk);
+  pulsar(tic_tecla, tecla, X"F" , clk);  --leer
+    report "Pulsada la F";
+    report "leemos 9ABC";
+    wait until nCSB'event and nCSB = '1';
+  wait for 50* Tclk;
+  wait until clk'event and clk = '1';
+
   -- CTRL_MS
   set_modo_reg_conf (tic_tecla, tecla, info_disp, clk);
   editar_reg_conf (tic_tecla, tecla, info_disp, reg_tx, X"1", X"80", clk);
@@ -204,6 +246,14 @@ report "EStado single y MSB";
  wait until nCSB'event and nCSB = '1';
  wait for 50* Tclk;
  wait until clk'event and clk = '1';
+
+ set_modo_reg_op (tic_tecla, tecla, info_disp, clk);
+  pulsar(tic_tecla, tecla, X"F" , clk);  --leer
+    report "Pulsada la F";
+    report "leemos F012";
+    wait until nCSB'event and nCSB = '1';
+  wait for 50* Tclk;
+  wait until clk'event and clk = '1';
 
   assert false
   report "Fin del test"
