@@ -1,14 +1,5 @@
 -- Temporizador para SPI
 
--- Genera las señales de temporizacion para el resto de los modulos del SPI
--- Todas son de un periodo de reloj y son los siguientes, teniendo el reloj una frecuencia de 50 MHz:
--- tds_min: 5 ns;
--- tdh_min: 2 ns;
--- tacces_max: 60 ns;
--- tz_max: 20 ns;
-
--- Genericos: a la viste de si hacen falta
-
 -- Designer: Grupo 2
 -- Date: 2023-04-24;
 -- Version: 1.0;
