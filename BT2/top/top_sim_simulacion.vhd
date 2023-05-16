@@ -32,14 +32,10 @@ architecture estructural of top_sim is
   signal info_disp: std_logic_vector(2 downto 0);
   signal reg_tx: std_logic_vector(31 downto 0);
   
+  signal tic_5ms : std_logic;
   signal tic_2_5ms: std_logic;
   signal tic_0_5s: std_logic;
 
-  signal tds_min : std_logic;
-  signal tdh_min : std_logic;
-  signal tacces_max : std_logic;
-  signal tz_max : std_logic;
-  signal timer_teclado : std_logic;
   
   signal str_sgl_ins_slave:  std_logic;
   signal add_up_slave:       std_logic;

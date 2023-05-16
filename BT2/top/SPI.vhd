@@ -19,62 +19,42 @@ end SPI;
 
 architecture struct of SPI is
 
-    signal dato_tx : std_logic_vector(7 downto 0);
-    signal dato_rx : std_logic_vector(7 downto 0);
-
-    signal init_tx : std_logic;
-    signal init_rx : std_logic;
-    signal data_ready : std_logic;
+    signal dato_tx : std_logic_vector(7 downto 0);-- datos que transmitimos por SDO
+    signal dato_rx : std_logic_vector(7 downto 0);-- datps que recibimos por SDI
 
     signal ena_out : std_logic;
-    signal ena_in : std_logic;
+    signal ena_in : std_logic; -- para hablar con los registros
 
     signal nWR : std_logic;
     signal adr_reg : std_logic_vector(4 downto 0);
-    signal dato_in_reg : std_logic_vector(7 downto 0);
 
+    signal dato_in_reg : std_logic_vector(7 downto 0);
     signal dato_out_reg : std_logic_vector(7 downto 0);
     
-    signal tds_min : std_logic;
-    signal tdh_min : std_logic;
-    signal tacces_max : std_logic;
-    signal tz_max : std_logic;
     
 begin
  com_SPI: entity work.com_spi(rtl)
  port map (
     clk => clk,
     nRst => nRst,
+    -- lineas SPI
     SDI => SDI,
     nCS => nCS,
     SDO => SDO,
     clk_in => sclk,
-    init_tx => init_tx,
-    init_rx => init_rx,
-    data_ready => data_ready,
     dato_rx => dato_rx,
     dato_tx => dato_tx,
-    modo_3_4_hilos => mode_3_4_h_slave
+    -- comunicacion con los registros
+    ena_out       => ena_out,
+    ena_in        => ena_in,
+    dato_out_reg  => dato_out_reg,
+    dato_in_reg   => dato_in_reg,
+    -- chequeo de consistencia
+    modo_3_4_hilos => mode_3_4_h_slave,
+    str_sgl_ins_slave => str_sgl_ins_slave,
+    add_up_slave => add_up_slave,
+    MSB_1st_slave => MSB_1st_slave
  );
-
- logica_SPI: entity work.logica_spi(rtl)
- port map(clk           => clk,
-        nRst          => nRst,
-        dato_tx       => dato_tx,
-        dato_rx       => dato_rx,
-        init_tx       => init_tx,
-        data_ready    => data_ready,
-        init_rx       => init_rx,
-        ena_out       => ena_out,
-        dato_out_reg  => dato_out_reg,
-        dato_in_reg   => dato_in_reg,
-        nWR           => nWR,
-        adr_reg       => adr_reg,
-        ena_in        => ena_in,
-        modo_3_4_hilos => mode_3_4_h_slave,
-        str_sgl_ins_slave => str_sgl_ins_slave,
-        add_up_slave => add_up_slave,
-        MSB_1st_slave => MSB_1st_slave);
 
  regs: entity work.regs(rtl)
     port map(clk => clk,
