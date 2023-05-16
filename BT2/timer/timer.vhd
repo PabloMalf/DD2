@@ -24,169 +24,81 @@ use ieee.std_logic_unsigned.all;
     port (
         clk :       in std_logic;
         nRst :     in std_logic;
-        tds_min :   buffer std_logic;
-        tdh_min :   buffer std_logic;
-        tacces_max: buffer std_logic;
-        tz_max :    buffer std_logic;
-        timer_teclado: buffer std_logic;
+       
+        tic_5ms:    buffer std_logic;
         tic_2_5ms:  buffer std_logic;
-        tic_0_5s:  buffer std_logic
+        tic_0_5s:   buffer std_logic
 
     
     );
     end timer;
 
     architecture rtl of timer is
-        signal cnt_div_tdsmin :     std_logic_vector(1 downto 0); -- MODULO 3
-        signal cnt_div_taccesmax :  std_logic_vector(5 downto 0); -- MODULO 30
-        signal cnt_div_tzmax :      std_logic_vector(4 downto 0); -- MODULO 10
-        signal cnt_div_tdhmin :     std_logic; -- MODULO 1
-        signal cnt_timer_teclado :  std_logic_vector(18 downto 0); -- MODULO 25000
 
         signal cnt_2_5ms :         std_logic_vector(16 downto 0); -- MODULO 125000
-        signal cnt_0_5s :          std_logic_vector(7 downto 0); -- MODULO 200
+        signal cnt_5ms :  std_logic_vector(18 downto 0); -- MODULO 2
+        signal cnt_0_5s :          std_logic_vector(7 downto 0); -- MODULO 100
         
-        constant div_6ns : natural:= 2;
-        constant div_60ns : natural:= 29;
-        constant div_20ns : natural:= 9;
-        constant div_2ns : natural:= 1;
-
         constant div_2_5ms : natural:= 124999;
-        constant div_0_5s : natural:= 199;
+        constant div_5ms : natural:= 1;
+        constant div_0_5s : natural:= 99;
 
         begin
 
-        divisor_tDS_min: process (clk, nRst)
-        begin
-            if (nRst = '0') then
-                cnt_div_tdsmin <= (others => '0');
-            
-            elsif clk'event and clk='1' then
-                if (tds_min='1') then
-                    cnt_div_tdsmin <= (others => '0');
-                else
-                    cnt_div_tdsmin <= cnt_div_tdsmin + 1;
-                end if;
-            end if;
-        end process divisor_tDS_min;
 
-        tds_min <= '1' when cnt_div_tdsmin = div_6ns else '0';
-
---------------------------------------------------------------------------
-                
-        
-        divisor_tZ_max: process (clk, nRst)
-        begin
-            if (nRst = '0') then
-                cnt_div_tzmax <= (others => '0');
-            
-            elsif clk'event and clk='1' then
-                if (tz_max='1') then
-                    cnt_div_tzmax <= (others => '0');
-                else
-                    cnt_div_tzmax <= cnt_div_tzmax + 1;
-                end if;
-            end if;
-        end process divisor_tZ_max;
-
-        tz_max <= '1' when cnt_div_tzmax = div_20ns else '0';
-
---------------------------------------------------------------------------
-
-        divisor_tacces_max: process (clk, nRst)
-        begin
-            if (nRst = '0') then
-                cnt_div_taccesmax <= (others => '0');
-            
-            elsif clk'event and clk='1' then
-                if (tacces_max='1') then
-                    cnt_div_taccesmax <= (others => '0');
-                else
-                    cnt_div_taccesmax <= cnt_div_taccesmax + 1;
-                end if;
-            end if;
-        end process divisor_tacces_max;
-
-        tacces_max <= '1' when cnt_div_taccesmax = div_60ns else '0';
-
---------------------------------------------------------------------------
-        
-     --   divisor_tdh_min: process (clk, nRst)
-     --   begin
-      --      if (nRst = '0') then
-      --          cnt_div_tdhmin <= '0';
-      --      
---             elsif clk'event and clk='1' then
-    ---            tdh_min <= not tdh_min;
-     --       end if;
-     --   end process divisor_tdh_min;
-        --- PREGUNTA: podemos directamente conectar el reloj en el portmap como la salida de del tic????
-
-        process(clk, nRst)
-        begin
-            if (nRst = '0') then
-                tdh_min <= '0';
-            elsif (clk'event and clk='1') then
-                tdh_min <= not tdh_min;
-            end if;
-        end process;
-
---------------------------------------------------------------------------
+--- timer de 2.5 ms
         process (clk, nRst)
-        begin
-            if (nRst ='0') then
-                cnt_timer_teclado<=(others => '0');
-            elsif clk'event and clk='1' then
-
-                if (cnt_timer_teclado = 0) then
-                    timer_teclado <= '1';
-                    cnt_timer_teclado <= cnt_timer_teclado + 1;
-
-                elsif cnt_timer_teclado = 249999 then
-                    timer_teclado <= '0';
-                    cnt_timer_teclado <= (others => '0');
-                     
-                else
-                    cnt_timer_teclado <= cnt_timer_teclado + 1;
-                    timer_teclado <= '0';
-                end if;
-            end if;
-        end process;
-    
---------------------------------------------------------------------------
-        
-        process (clk, nRst)
-        begin
+        begin 
             if nRst='0' then
-                cnt_2_5ms<= (others => '0');
-                
+                cnt_2_5ms <= (others => '0'); 
             elsif clk'event and clk='1' then
-                if cnt_2_5ms < div_2_5ms then
-                    cnt_2_5ms <= cnt_2_5ms + 1;
+                if cnt_2_5ms = div_2_5ms then
+                    cnt_2_5ms<= (others => '0');
                 else
-                    cnt_2_5ms <= (others => '0');
+                    cnt_2_5ms <= cnt_2_5ms + 1;
                 end if;
             end if;
-        end process;      
-        
-        process (clk, nRst)
-        begin
-            if nRst='0' then 
-            cnt_0_5s <= (others => '0');   
-            elsif clk'event and clk='1' then
-				  if tic_2_5ms='1' then
-                if cnt_0_5s < div_0_5s  then
-                    cnt_0_5s <= cnt_0_5s + 1;
-                else
-                    cnt_0_5s <= (others => '0');
-                end if;
-					 end if;
-            end if; 
         end process;
-        
-        tic_2_5ms <= '1' when cnt_2_5ms = div_2_5ms else '0';
-        tic_0_5s <= '1' when cnt_0_5s = div_0_5s else '0';
 
+        tic_2_5ms <= '1' when cnt_2_5ms = div_5ms else '0';
+
+
+--- timer de 5 ms, siendo un tic cada 2 tics de 2.5 ms
+        process (clk, nRst)
+        begin 
+            if nRst='0' then
+                cnt_5ms <= (others => '0'); 
+            elsif clk'event and clk='1' then
+                if tic_2_5ms='1' then
+                    if cnt_5ms = div_5ms then
+                        cnt_5ms<= (others => '0');
+                    else
+                        cnt_5ms <= cnt_5ms + 1;
+                    end if;
+                end if;
+            end if;
+        end process;
+
+        tic_5ms <= '1' when cnt_5ms = div_5ms and tic_2_5ms else '0';
+
+-- timer de 0.5 s, siendo un tic cada 200 tics  de 2.5 ms
+
+        process (clk, nRst)
+        begin 
+            if nRst='0' then
+                cnt_0_5s <= (others => '0'); 
+            elsif clk'event and clk='1' then
+                if tic_5ms='1' then
+                    if cnt_0_5s = div_0_5s then
+                        cnt_0_5s<= (others => '0');
+                    else
+                        cnt_0_5s <= cnt_0_5s + 1;
+                    end if;
+                end if;
+            end if;
+        end process;
+
+        tic_0_5s <= '1' when cnt_0_5s = div_0_5s and tic_5ms else '0';
     
     end rtl;
     
