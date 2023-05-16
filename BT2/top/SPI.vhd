@@ -42,8 +42,6 @@ begin
     nCS => nCS,
     SDO => SDO,
     clk_in => sclk,
-    dato_rx => dato_rx,
-    dato_tx => dato_tx,
     -- comunicacion con los registros
     ena_out       => ena_out,
     ena_in        => ena_in,

@@ -70,7 +70,7 @@ use ieee.std_logic_unsigned.all;
             end if;
         end process;
 
-        tic_5ms <= '1' when cnt_5ms = div_5ms and tic_2_5ms else '0';
+        tic_5ms <= '1' when cnt_5ms = div_5ms and tic_2_5ms='1' else '0';
 
 -- timer de 0.5 s, siendo un tic cada 200 tics  de 2.5 ms
 
@@ -89,7 +89,7 @@ use ieee.std_logic_unsigned.all;
             end if;
         end process;
 
-        tic_0_5s <= '1' when cnt_0_5s = div_0_5s and tic_5ms else '0';
+        tic_0_5s <= '1' when cnt_0_5s = div_0_5s and tic_5ms='1' else '0';
     
     end rtl;
     

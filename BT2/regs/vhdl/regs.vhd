@@ -56,7 +56,8 @@ architecture rtl of regs is
                     when "00000" => reg0 <= dato_in_reg;
                     when "00001" => reg1 <= dato_in_reg;
                     when "10000" => reg16 <= dato_in_reg;
-                    when "10001" => reg17 <= dato_in_reg;
+                    when others => reg17 <= dato_in_reg;
+                     
                 end case;
                 ena_out <= '0';
 
