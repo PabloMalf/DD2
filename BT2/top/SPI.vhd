@@ -9,7 +9,11 @@ entity SPI is
     SDI  : inout std_logic;
     nCS   : in std_logic;
     SDO  : buffer std_logic;
-    sclk : in std_logic
+    sclk : in std_logic;
+    mode_3_4_h_slave: buffer std_logic;
+    str_sgl_ins_slave : buffer std_logic;
+    add_up_slave : buffer std_logic;
+    MSB_1st_slave : buffer std_logic
     );
 end SPI;
 
@@ -49,7 +53,8 @@ begin
     init_rx => init_rx,
     data_ready => data_ready,
     dato_rx => dato_rx,
-    dato_tx => dato_tx
+    dato_tx => dato_tx,
+    modo_3_4_hilos => mode_3_4_h_slave
  );
 
  logica_SPI: entity work.logica_spi(rtl)
@@ -58,14 +63,18 @@ begin
         dato_tx       => dato_tx,
         dato_rx       => dato_rx,
         init_tx       => init_tx,
-        dato_ready    => data_ready,
+        data_ready    => data_ready,
         init_rx       => init_rx,
         ena_out       => ena_out,
         dato_out_reg  => dato_out_reg,
         dato_in_reg   => dato_in_reg,
         nWR           => nWR,
         adr_reg       => adr_reg,
-        ena_in        => ena_in);
+        ena_in        => ena_in,
+        modo_3_4_hilos => mode_3_4_h_slave,
+        str_sgl_ins_slave => str_sgl_ins_slave,
+        add_up_slave => add_up_slave,
+        MSB_1st_slave => MSB_1st_slave);
 
  regs: entity work.regs(rtl)
     port map(clk => clk,
@@ -76,13 +85,5 @@ begin
             dato_in_reg => dato_in_reg,
             ena_out => ena_out,
             dato_reg => dato_out_reg);
-
---   timer: entity work.timer(rtl)
---     port map(clk => clk,
---             nRst => nRst,
---             tds_min => tds_min,
---             tdh_min => tdh_min,
---             tacces_max => tacces_max,
---             tz_max => tz_max);
 
 end struct;

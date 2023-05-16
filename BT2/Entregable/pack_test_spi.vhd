@@ -21,14 +21,14 @@ package pack_test_spi is
   procedure editar_reg_op (signal   tic_tecla:   out std_logic;
                            signal   tecla:       out std_logic_vector(3 downto 0);
                            signal   info_disp:   in  std_logic_vector(2 downto 0);
-                           signal   reg_tx:      in  std_logic_vector(15 downto 0);
+                           signal   reg_tx:      in  std_logic_vector(31 downto 0);
                            constant valor:       in  std_logic_vector(15 downto 0);
                            signal   clk:         in  std_logic);
 
   procedure editar_reg_conf (signal   tic_tecla:   out std_logic;
                              signal   tecla:       out std_logic_vector(3 downto 0);
                              signal   info_disp:   in  std_logic_vector(2 downto 0);
-                             signal   reg_tx:      in  std_logic_vector(15 downto 0);
+                             signal   reg_tx:      in  std_logic_vector(31 downto 0);
                              constant add:         in  std_logic_vector(3 downto 0);
                              constant valor:       in  std_logic_vector(7 downto 0);
                              signal   clk:         in  std_logic);
@@ -82,7 +82,7 @@ package body pack_test_spi is
   procedure editar_reg_op (signal   tic_tecla:   out std_logic;
                            signal   tecla:       out std_logic_vector(3 downto 0);
                            signal   info_disp:   in  std_logic_vector(2 downto 0);
-                           signal   reg_tx:      in  std_logic_vector(15 downto 0);
+                           signal   reg_tx:      in  std_logic_vector(31 downto 0);
                            constant valor:       in  std_logic_vector(15 downto 0);
                            signal   clk:         in  std_logic) is
     
@@ -153,7 +153,7 @@ package body pack_test_spi is
   procedure editar_reg_conf (signal   tic_tecla:   out std_logic;
                              signal   tecla:       out std_logic_vector(3 downto 0);
                              signal   info_disp:   in  std_logic_vector(2 downto 0);
-                             signal   reg_tx:      in  std_logic_vector(15 downto 0);
+                             signal   reg_tx:      in  std_logic_vector(31 downto 0);
                              constant add:         in  std_logic_vector(3 downto 0);
                              constant valor:       in  std_logic_vector(7 downto 0);
                              signal   clk:         in  std_logic) is

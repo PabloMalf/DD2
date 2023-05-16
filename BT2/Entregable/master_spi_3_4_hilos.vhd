@@ -6,9 +6,9 @@ entity master_spi_3_4_hilos is
 port(nRst:        in std_logic;							  -- Reset asíncrono
      clk:         in std_logic;                           -- 50 MHz
      -- Config
-     MSB_1st:     in std_logic;							  -- 0 -> modo MSB First, 1 -> modo LSB First
-     mode_3_4_h:  in std_logic;							  -- 0 -> modo 3 hilos, 1 -> modo 4 hilos
-     str_sgl_ins: in std_logic;							  -- 0 -> modo streaming, 1 -> modo single instruction
+     MSB_1st_master:     in std_logic;							  -- 0 -> modo MSB First, 1 -> modo LSB First
+     mode_3_4_h_master:  in std_logic;							  -- 0 -> modo 3 hilos, 1 -> modo 4 hilos
+     str_sgl_ins_master: in std_logic;							  -- 0 -> modo streaming, 1 -> modo single instruction
 
      -- Ctrl_SPI
      start:       in     std_logic;                       -- Orden de ejecucion (si rdy = 1 ) => rdy  <= 0 hasta fin, cuando rdy <= 1
@@ -139,10 +139,10 @@ begin
 
       if start = '1' and nCS = '1' then
           nWR_RD <= dato_in(47) & dato_in(23);
-          if MSB_1st = '0' then
+          if MSB_1st_master = '0' then
             reg_SPI <= dato_in;
 
-          elsif str_sgl_ins = '0' then
+          elsif str_sgl_ins_master = '0' then
             reg_SPI(15 downto 0)  <= dato_in(47 downto 32);
             reg_SPI(23 downto 16) <= dato_in(31 downto 24);
             reg_SPI(31 downto 24) <= dato_in(23 downto 16);
@@ -158,7 +158,7 @@ begin
           end if;
 
       elsif SPC_negedge = '1' then
-        if MSB_1st = '0' then
+        if MSB_1st_master = '0' then
           reg_SPI(47 downto 1) <= reg_SPI(46 downto 0);
 
         else
@@ -167,8 +167,8 @@ begin
         end if;
 
       elsif SPC_posedge = '1' and cnt_bits_SPC /= 0 then
-        if MSB_1st = '0' then
-          if mode_3_4_h = '0' then
+        if MSB_1st_master = '0' then
+          if mode_3_4_h_master = '0' then
             reg_SPI(0) <= SDIO_syn;
 
           else
@@ -177,7 +177,7 @@ begin
           end if;
 
         else
-          if mode_3_4_h = '0' then
+          if mode_3_4_h_master = '0' then
             reg_SPI(47) <= SDIO_syn;
 
           else
@@ -190,24 +190,24 @@ begin
     end if;
   end process;
 
-  ena_rd <= SPC_negedge and nWR_RD(1) when cnt_bits_SPC(2 downto 0) = 0 and cnt_bits_SPC(6 downto 3) > 2 and str_sgl_ins = '0' else
-            SPC_negedge and nWR_RD(1) when cnt_bits_SPC(2 downto 0) = 0 and cnt_bits_SPC(6 downto 3) = 3 and str_sgl_ins = '1' else  
-            SPC_negedge and nWR_RD(0) when cnt_bits_SPC(2 downto 0) = 0 and cnt_bits_SPC(6 downto 3) = 6 and str_sgl_ins = '1' else  
+  ena_rd <= SPC_negedge and nWR_RD(1) when cnt_bits_SPC(2 downto 0) = 0 and cnt_bits_SPC(6 downto 3) > 2 and str_sgl_ins_master = '0' else
+            SPC_negedge and nWR_RD(1) when cnt_bits_SPC(2 downto 0) = 0 and cnt_bits_SPC(6 downto 3) = 3 and str_sgl_ins_master = '1' else  
+            SPC_negedge and nWR_RD(0) when cnt_bits_SPC(2 downto 0) = 0 and cnt_bits_SPC(6 downto 3) = 6 and str_sgl_ins_master = '1' else  
             '0';  
 
-  dato_rd <= reg_SPI(7 downto 0) when MSB_1st = '0' else
+  dato_rd <= reg_SPI(7 downto 0) when MSB_1st_master = '0' else
              reg_SPI(47 downto 40);
 
 
 
 
-  SDIO_o <= reg_SPI(47) when MSB_1st = '0' else
+  SDIO_o <= reg_SPI(47) when MSB_1st_master = '0' else
             reg_SPI(0);
 
   n_ctrl_SDIO <= nCS              when cnt_bits_SPC(6 downto 3) < 2                        else
                  nCS or nWR_RD(1) when cnt_bits_SPC(6 downto 3) = 2                        else
-                 nCS or nWR_RD(1) when cnt_bits_SPC(6 downto 3) > 2  and str_sgl_ins = '0' else
-                 nCS              when cnt_bits_SPC(6 downto 3) < 5  and str_sgl_ins = '1' else
+                 nCS or nWR_RD(1) when cnt_bits_SPC(6 downto 3) > 2  and str_sgl_ins_master = '0' else
+                 nCS              when cnt_bits_SPC(6 downto 3) < 5  and str_sgl_ins_master = '1' else
                  nCS or nWR_RD(0) when cnt_bits_SPC(6 downto 3) = 5                        else  
                  '1';
 

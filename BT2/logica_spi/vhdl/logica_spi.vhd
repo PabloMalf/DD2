@@ -10,7 +10,7 @@ port(clk:             in     std_logic;
      init_rx:         in     std_logic;
    --  fin_rx:          in     std_logic;  no lo usamos en ningun lado 
      dato_rx:         in     std_logic_vector(7 downto 0);
-     dato_ready:      in     std_logic;                            --1 ciclo de reloj??
+     data_ready:      in     std_logic;                            --1 ciclo de reloj??
      --Registros
      ena_out:         in     std_logic;                     --Entrada de registros que indica que el dato esta listo y se puede leer
      dato_out_reg:    in     std_logic_vector(7 downto 0);
@@ -23,7 +23,10 @@ port(clk:             in     std_logic;
      dato_in_reg:     buffer std_logic_vector(7 downto 0);
      nWR:             buffer std_logic;                                 
      adr_reg:         buffer std_logic_vector(4 downto 0);  
-     ena_in:          buffer std_logic                    --Salida para registros que indica que el dato esta listo y sepuede escribir en el registro
+     ena_in:          buffer std_logic;                    --Salida para registros que indica que el dato esta listo y sepuede escribir en el registro
+     str_sgl_ins_slave: buffer std_logic;
+     add_up_slave:    buffer std_logic;
+     MSB_1st_slave:   buffer std_logic
     );
 end entity;
 
@@ -48,11 +51,6 @@ architecture rtl of logica_spi is
   signal nWR_actual: std_logic; -- Guarda el estado de lectura/escritura. Es el bit menos significativo de adr_com
   signal cambio_contador: std_logic_vector (1 downto 0); --indica si hay que cambiar el contador
 begin
-  --PREGUNTAS PROFE:
-        --Se puede usar la funcion reverse???? respuesta: si pero hayq ue tener cuidado por si no es sintetizable
-        
-  -- cositas qeu faltan: 
---   terminar de enviar la informacion con spi
 
   ---ESTADO DEL AUTOMATA DE STREAMING/SINGLE-... y el de LSB/MSB
   process(clk, nRst)       
@@ -65,25 +63,27 @@ begin
     elsif clk'event and clk = '1' then
       case estado_escritura is
         when streaming => 
-           if adr_com_actual = X"0001" and dato_rx(7)='1' and estado_bit=MSB and dato_ready='1' then
+--           if adr_com_actual = X"0001" and dato_rx(7)='1' and estado_bit=MSB and data_ready='1' then
+            if adr_com_actual = X"0001" and dato_rx(7)='1' and estado_bit=MSB and data_ready='1'  then
               estado_escritura <= single;
-            elsif adr_com_actual = X"0001" and dato_rx(0)='1' and estado_bit=LSB and dato_ready='1' then 
+--            elsif adr_com_actual = X"0001" and dato_rx(0)='1' and estado_bit=LSB and data_ready='1' then 
+            elsif adr_com_actual = X"0001" and dato_rx(0)='1' and estado_bit=LSB and data_ready='1' then
               estado_escritura <= single;
            end if;
         when single=>
-            if adr_com = X"0001" and dato_rx(7)='0' and estado_bit=MSB and dato_ready='1' then
+            if adr_com_actual = X"0001" and dato_rx(7)='0' and estado_bit=MSB and data_ready='1' then
               estado_escritura <= streaming;
-            elsif adr_com= X"0001" and dato_rx(0)='0' and estado_bit=LSB and dato_ready='1' then 
+            elsif adr_com_actual= X"0001" and dato_rx(0)='0' and estado_bit=LSB and data_ready='1' then 
               estado_escritura <= streaming;
            end if;
       end case;
       case estado_bit is -- controla MSB o LSB
         when MSB =>
-            if adr_com_actual = X"0000" and dato_rx(6)='1' and dato_rx(1)= '1' and dato_ready='1'  then
+            if adr_com_actual = X"0000" and dato_rx(6)='1' and dato_rx(1)= '1' and data_ready='1'  then
               estado_bit <= LSB;
             end if;
         when LSB =>
-            if adr_com_actual = X"0000" and dato_rx(6)='0' and dato_rx(1)= '0' and dato_ready='1'  then
+            if adr_com_actual = X"0000" and dato_rx(6)='0' and dato_rx(1)= '0' and data_ready='1'  then
               estado_bit <= MSB;
             end if;
         
@@ -91,24 +91,24 @@ begin
         
       case orden_escritura is
         when ascendente =>
-            if adr_com_actual = X"0000" and dato_rx(5)='0' and dato_rx(2)= '0' and dato_ready='1' then -- da igual que este en MSB o LSB dado que es palindromo y son iguales en los dos modos
+            if (adr_com_actual = X"0000" and adr_com(0) /= '1') and dato_rx(5)='0' and dato_rx(2)= '0' and data_ready='1' then -- da igual que este en MSB o LSB dado que es palindromo y son iguales en los dos modos
               orden_escritura <= descendente;
             end if;
 
         when descendente => 
-            if adr_com_actual = X"0000" and dato_rx(5)='1' and dato_rx(2)= '1' and dato_ready='1' then -- da igual que este en MSB o LSB dado que es palindromo y son iguales en los dos modos
+            if adr_com_actual = X"0000"  and dato_rx(5)='1' and dato_rx(2)= '1' and data_ready='1' then -- da igual que este en MSB o LSB dado que es palindromo y son iguales en los dos modos
               orden_escritura <= ascendente;
             end if;
         end case;
         
         case n_hilos is
         when hilos4 =>
-            if adr_com_actual = X"0000" and dato_rx(4)='0' and dato_rx(3)= '0' and dato_ready='1' then -- da igual que este en MSB o LSB dado que es palindromo y son iguales en los dos modos
+            if adr_com_actual = X"0000" and dato_rx(4)='0' and dato_rx(3)= '0' and data_ready='1' then -- da igual que este en MSB o LSB dado que es palindromo y son iguales en los dos modos
               n_hilos <= hilos3;
             end if;
 
         when hilos3 => 
-            if adr_com_actual = X"0000" and dato_rx(4)='1' and dato_rx(3)= '1' and dato_ready='1' then -- da igual que este en MSB o LSB dado que es palindromo y son iguales en los dos modos
+            if adr_com_actual = X"0000" and dato_rx(4)='1' and dato_rx(3)= '1' and data_ready='1' then -- da igual que este en MSB o LSB dado que es palindromo y son iguales en los dos modos
               n_hilos <= hilos4;
             end if;
         end case;
@@ -116,25 +116,29 @@ begin
     end if ;
   end process;
   --Señal para el numero de hilos
-  modo_3_4_hilos<= '1' when n_hilos=hilos3 else '0';
-  --Explicacion de reverse : segun internet es una funcion de std_logic_1164
-  adr_T1<= dato_rx when contador = 0  and estado_bit=MSB and dato_ready='1' and estado_escritura=streaming else
-           dato_rx(7) & dato_rx(6) & dato_rx(5) & dato_rx(4) & dato_rx(3) & dato_rx(2) &dato_rx(1) & dato_rx(0)  when  contador = 0  and estado_bit=LSB and dato_ready='1' and estado_escritura=streaming else
-           dato_rx when contador_multiplo = 0 and estado_bit=MSB and dato_ready='1'  and estado_escritura=single else 
-           dato_rx(7) & dato_rx(6) & dato_rx(5) & dato_rx(4) & dato_rx(3) & dato_rx(2) &dato_rx(1) & dato_rx(0) when contador_multiplo = 0 and estado_bit=LSB and dato_ready='1' and estado_escritura=single
+  modo_3_4_hilos<= '0' when n_hilos=hilos3 else '1';
+  
+  str_sgl_ins_slave <= '0' when estado_escritura = streaming else '1';
+  add_up_slave <= '0' when orden_escritura = descendente else '1';
+  MSB_1st_slave <= '0' when estado_bit = MSB else '1';
+  
+  adr_T1<= dato_rx when contador = 0  and estado_bit=MSB and data_ready='1' and estado_escritura=streaming else
+           dato_rx(0) & dato_rx(1) & dato_rx(2) & dato_rx(3) & dato_rx(4) & dato_rx(5) &dato_rx(6) & dato_rx(7)  when  contador = 0  and estado_bit=LSB and data_ready='1' and estado_escritura=streaming else
+           dato_rx when contador_multiplo = 0 and estado_bit=MSB and data_ready='1'  and estado_escritura=single else 
+           dato_rx(0) & dato_rx(1) & dato_rx(2) & dato_rx(3) & dato_rx(4) & dato_rx(5) &dato_rx(6) & dato_rx(7) when contador_multiplo = 0 and estado_bit=LSB and data_ready='1' and estado_escritura=single
            else adr_T1;
-  adr_com<= adr_T1 & dato_rx when estado_escritura=streaming and contador=1 and estado_bit=MSB and dato_ready='1' else  --convierte el adr en algo legible para Registros
-            adr_T1 & dato_rx(7) & dato_rx(6) & dato_rx(5) & dato_rx(4) & dato_rx(3) & dato_rx(2) &dato_rx(1) & dato_rx(0)when estado_escritura=streaming and contador=1 and estado_bit=LSB  and dato_ready='1' else 
-            adr_T1 & dato_rx when contador_multiplo=1 and estado_bit=MSB  and estado_escritura=single and dato_ready='1' else 
-            adr_T1 & dato_rx(7) & dato_rx(6) & dato_rx(5) & dato_rx(4) & dato_rx(3) & dato_rx(2) &dato_rx(1) & dato_rx(0)  when contador_multiplo=1 and estado_bit=LSB  and estado_escritura=single and dato_ready='1'
+  adr_com<= adr_T1 & dato_rx when estado_escritura=streaming and contador=1 and estado_bit=MSB and data_ready='1' else  --convierte el adr en algo legible para Registros
+            dato_rx(0) & dato_rx(1) & dato_rx(2) & dato_rx(3) & dato_rx(4) & dato_rx(5) &dato_rx(6) & dato_rx(7) & adr_T1 when estado_escritura=streaming and contador=1 and estado_bit=LSB  and data_ready='1' else 
+            adr_T1 & dato_rx when contador_multiplo=1 and estado_bit=MSB  and estado_escritura=single and data_ready='1' else 
+            dato_rx(0) & dato_rx(1) & dato_rx(2) & dato_rx(3) & dato_rx(4) & dato_rx(5) &dato_rx(6) & dato_rx(7) & adr_T1 when contador_multiplo=1 and estado_bit=LSB  and estado_escritura=single and data_ready='1'
             else adr_com;  
+          
+  adr_com_actual<= ('0' & adr_com (14 downto 0)) + contador - 2 when orden_escritura=ascendente and contador > 1 else -- address actual en caso de streaming dependiendo si es ascendente o descendente
+                   ('0' & adr_com(14 downto 0)) - contador + 2 when orden_escritura=descendente and contador > 1 else
+                   X"FFFF";
 
-    adr_com_actual<= ('0' & adr_com (14 downto 0)) + contador - 2 when orden_escritura=ascendente and contador /= 0 else -- address actual en caso de streaming dependiendo si es ascendente o descendente
-                     ('0' & adr_com(14 downto 0)) - contador + 2 when orden_escritura=descendente and contador /= 0 else
-                     X"FFFF";
-
-    nWR_actual <= adr_com(15) when estado_bit = MSB and contador = 2 else
-                  adr_com(0) when estado_bit= LSB and contador=2  else nWR_actual;  -- LSB
+  nWR_actual <= adr_com(15) when contador = 2 else nWR_actual;
+     --           adr_com(15) when estado_bit= LSB and contador=2  else nWR_actual;  -- LSB 
   --- ESCRITURA/LECTURA DE REGISTROS
   process(clk, nRst)       
   begin
@@ -145,7 +149,7 @@ begin
       cambio_contador <= (others => '0');
     elsif clk'event and clk = '1' then
      
-      if estado_escritura=streaming and dato_ready='1' and  nWR_actual='0' and contador>=2 then   --CASO STREAMING ESCRITURA
+      if estado_escritura=streaming and data_ready='1' and  nWR_actual='0' and contador>=2 then   --CASO STREAMING ESCRITURA
           nWR<= '0';                                                    
           adr_reg<= adr_com_actual(4 downto 0); --(5 downto 1);                     --Escribo la direccion y el dato para registro
           ena_in<='1';
@@ -154,14 +158,14 @@ begin
           else
             dato_in_reg<= dato_rx(0) & dato_rx(1) & dato_rx(2) & dato_rx(3) & dato_rx(4) & dato_rx(5) & dato_rx(6) & dato_rx(7);
           end if;
-      elsif estado_escritura=single and  contador_multiplo = 1 and  dato_ready = '1' and  adr_com(15)= '0' then --CASO SINGLE ESCRITURA
+      elsif estado_escritura=single and  contador_multiplo = 2 and  data_ready = '1' and  adr_com(15)= '0' then --CASO SINGLE ESCRITURA
            nWR<= '0';
            ena_in<='1';
            adr_reg<= adr_com(4 downto 0);
            if estado_bit = MSB then 
             dato_in_reg <= dato_rx;
           else
-          dato_in_reg<= dato_rx(0) & dato_rx(1) & dato_rx(2) & dato_rx(3) & dato_rx(4) & dato_rx(5) & dato_rx(6) & dato_rx(7);
+            dato_in_reg<= dato_rx(0) & dato_rx(1) & dato_rx(2) & dato_rx(3) & dato_rx(4) & dato_rx(5) & dato_rx(6) & dato_rx(7);
           end if;
 
       elsif cambio_contador=0 and  nWR_actual='1' and estado_escritura=streaming and contador = 2 then                       --CASO LECTURA  PARA REGISTROS
@@ -188,7 +192,7 @@ begin
       elsif cambio_contador=3 and nWR_actual='1' and estado_escritura=streaming and contador = 2 then
         ena_in <= '0'; 
                           
-     elsif cambio_contador=0 and   adr_com(15)='1' and estado_escritura=single and contador_multiplo = 2 then                       --CASO LECTURA  PARA REGISTROS
+     elsif ((cambio_contador=0 and contador_multiplo = 2) or ( contador_multiplo = 0 )) and estado_escritura=single  and   adr_com(15)='1' then                       --CASO LECTURA  PARA REGISTROS
         cambio_contador<=cambio_contador+1;
           nWR<= '1'; 
           ena_in <= '1';
@@ -196,32 +200,11 @@ begin
       else 
         ena_in <= '0';
       end if;
-      if dato_ready='1' then   --CASO LESCTURA PARA QUE DURE UN CILO
+      if data_ready='1' then   --CASO LESCTURA PARA QUE DURE UN CILO
       cambio_contador <= (others => '0');
       end if;
     end if;
   end process;
-  -- ena_in<='1' cambio_contador=0 or cambio_contador=2 else '0';
-  -- nWR<='1';
---- INFORMACION PARA COMUNICACION
-    -- process(clk, nRst)
-    -- begin
-    --   if nRst='0' then
-    --       init_tx<='0';
-
-    --   elsif clk'event and clk='1' then
-    --       if ena_out='1' then
-    --         init_tx<='1';
-    --         if estado_bit=MSB then
-    --           dato_tx<=dato_out_reg;
-    --         elsif estado_bit=LSB then
-    --           dato_tx<=dato_out_reg(7) & dato_out_reg(6) & dato_out_reg(5) & dato_out_reg(4) & dato_out_reg(3) & dato_out_reg(2) & dato_out_reg(1) & dato_out_reg(0);
-    --         end if;
-    --       else 
-    --         init_tx<='0';
-    --       end if;
-    --   end if;    
-    -- end process;
     
     init_tx<= ena_out;
     dato_tx<=dato_out_reg when estado_bit=MSB else
@@ -238,7 +221,7 @@ begin
         if init_rx='1'  then   
           contador <= (others => '0');
           contador_multiplo <= (others => '0');
-        elsif dato_ready='1' then
+        elsif data_ready='1' then
           contador <= contador+1;
           if contador_multiplo/=2 then 
             contador_multiplo<=contador_multiplo+1;

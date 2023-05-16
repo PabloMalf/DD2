@@ -124,7 +124,7 @@ architecture rtl of regs is
                     when "01111" => dato_reg <= reg15;
                     when "10000" => dato_reg <= reg16;
                     when "10001" => dato_reg <= reg17;
-                    when others => dato_reg <= "10101010";
+                    when others => dato_reg <= "XXXXXXXX";
                 end case;
                 ena_out <= '1';
             else 
