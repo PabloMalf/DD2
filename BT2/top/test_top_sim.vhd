@@ -122,6 +122,8 @@ begin
   report "PRUEBA 1 NO SUPERADA: VALOR INCORRECTO EN REGISTROS"
   severity failure;
   
+  wait for 500* Tclk;
+  wait until clk'event and clk = '1';
 --------------------------------------------------------  FIN PRUEBA 1 -------------------------------------------------------- 
 
 -------- PRUEBA 2: se cargan los datos 1234 en los registros de operacion, despues se leen y despues se cambia al modo configuracion 
@@ -146,13 +148,6 @@ begin
   wait until clk'event and clk = '1';
   
   -- LECTURA
-  set_modo_reg_op(tic_tecla, tecla, info_disp, clk);
-  pulsar(tic_tecla, tecla, X"F" , clk);  --leer
-  report "[Tecla F]: Primera lectura de los 2 registros de operacion -> 1234";
-  
-  set_modo_reg_conf (tic_tecla, tecla, info_disp, clk);
-  editar_reg_conf (tic_tecla, tecla, info_disp, reg_tx, X"0", X"18", clk);    -- Configuracion a 4 hilos (por defecto)
-  set_modo_reg_op (tic_tecla, tecla, info_disp, clk);
   pulsar(tic_tecla, tecla, X"F" , clk);  --leer
   report "[Tecla F]: Segunda lectura de los 2 registros de operacion -> 1234";
 
@@ -164,6 +159,10 @@ begin
   assert reg_tx(15 downto 0) = X"1234"
   report "PRUEBA 2 NO SUPERADA: La segunda lectura no se corresponde con el valor 1234"
   severity failure;
+
+  wait for 500* Tclk;
+  wait until clk'event and clk = '1';
+
   
   report "*****************FIN PRUEBA 2*****************";
 --------------------------------------------------------  FIN PRUEBA 2 -------------------------------------------------------- 
@@ -240,6 +239,9 @@ begin
   assert reg_tx(15 downto 0) = X"5678"
   report "PRUEBA 3 NO SUPERADA: La lectura de los registros de operacion no se corresponde con el valor 5678"
   severity failure;
+
+  wait for 500* Tclk;
+  wait until clk'event and clk = '1';
   
   report "*****************FIN PRUEBA 3*****************";
 --------------------------------------------------------  FIN PRUEBA 3 -------------------------------------------------------- 
@@ -298,6 +300,9 @@ begin
   assert reg_tx(15 downto 0) = X"9ABC"
   report "PRUEBA 4 NO SUPERADA: No se ha detectado el valor correcto en los registros de operacion"
   severity failure;
+
+  wait for 500* Tclk;
+  wait until clk'event and clk = '1';
  
   report "*****************FIN PRUEBA 4*****************";
 ---- Pregunta: Ahora mismo el esclavo solo guarda datos en el registro 0 si es un dato valido, pero esto deberia ser asi, o se deberia de guardar?
@@ -367,6 +372,9 @@ begin
   report "PRUEBA 5 NO SUPERADA: No se ha detectado el valor correcto en los registros de operacion"
   severity failure;
   report "*****************FIN PRUEBA 5*****************";
+
+  wait for 500* Tclk;
+  wait until clk'event and clk = '1';
 --------------------------------------------------------  FIN PRUEBA 5 -------------------------------------------------------- 
 
 ---- Prueba 6: Se cambia al modo single y se editan los registros de configuracion (con un dato no valido) y de operacion. Despues se lee, primero 
@@ -438,7 +446,7 @@ begin
   wait for 50* Tclk;
   wait until clk'event and clk = '1';
   
-  assert reg_tx(7 downto 0) = X"34"
+  assert reg_tx(15 downto 0) = X"3456"
   report "PRUEBA 6 NO SUPERADA: No se ha detectado el valor correcto en los registros de operacion"
   severity failure;
   
@@ -447,6 +455,9 @@ begin
 --  severity failure;
 
   report "*****************FIN PRUEBA 6*****************";
+
+  wait for 500* Tclk;
+  wait until clk'event and clk = '1';
 --------------------------------------------------------  FIN PRUEBA 6 -------------------------------------------------------- 
   
   set_modo_reg_conf (tic_tecla, tecla, info_disp, clk);

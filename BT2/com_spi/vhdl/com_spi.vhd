@@ -322,10 +322,8 @@ begin
         else SDO_no_Z when modo_3_4_hilos = '0' 
         else 'Z';
   
-  SDO <= 'Z' when reg_SDI /= 'Z' or reg_cs /= '0' 
-         else SDO_no_Z when flanco_bajada_clk_in = '1' and modo_3_4_hilos /= '0'
-         else SDO when modo_3_4_hilos = '1' 
-         else 'Z';
+  SDO <=  SDO_no_Z when (estado=escritura_SDO or (estado = pillo_adr and reg_fdc_rcv_dato > 0)) and  modo_3_4_hilos='1' else
+         'Z';
 
 process(nRst, clk)
 begin
@@ -333,7 +331,7 @@ begin
     ena_in <= '0';
     reg_fdc_rcv_dato <= (others=> '0');
   elsif clk'event and clk = '1' then
-    if fdc_cnt_rcv_dato = '1' then
+    if fdc_cnt_rcv_dato = '1' or (fdc_cnt_send = '1' and str_sgl_ins_slave = '1') then
       reg_fdc_rcv_dato <= reg_fdc_rcv_dato + 1;
     elsif reg_fdc_rcv_dato > 0 then
       reg_fdc_rcv_dato <= reg_fdc_rcv_dato + 1;

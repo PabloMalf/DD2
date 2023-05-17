@@ -115,7 +115,7 @@ begin
 		 '0'&reg_tx(19 downto 16) when reg_mux = X"EF"                                             else -- -> valdrá C
   	     '1'&reg_tx(23 downto 20) when reg_mux = X"DF"                        and mode_check = '1' else -- -> valdrá I o d
 		 '1'&reg_tx(27 downto 24) when reg_mux = X"BF"                        and mode_check = '1' else -- -> valdrá t o I
-		 '1'&reg_tx(31 downto 28) when reg_mux = X"7F"                        and mode_check = '1';     -- -> valdrá S
+		 '1'&reg_tx(31 downto 28) when reg_mux = X"7F"                        and mode_check = '1' else "00000";     -- -> valdrá S
 		 
   -- Decodificador HEX  a 7 segmentos: salidas activas a nivel alto
   process(HEX)
