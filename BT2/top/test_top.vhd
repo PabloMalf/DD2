@@ -34,9 +34,7 @@ architecture test of test_top is
   signal info_disp: std_logic_vector(2 downto 0);
   signal reg_tx:    std_logic_vector(15 downto 0); 
 
-  signal fila:      std_logic_vector(3 downto 0);
-  signal columna:   std_logic_vector(3 downto 0);
-  
+
   constant Tclk: time := 5 ns;
 
 begin 
@@ -59,20 +57,20 @@ dut: entity work.top_sim(estructural)
               mode_3_4_h  => mode_3_4_h,
               str_sgl_ins => str_sgl_ins,
               add_up      => add_up,
+              tic_tecla   => tic_tecla,
+              tecla       => tecla,
               SDIO_m      => SDIO,
               SDIO_s      => SDIO,
               SDO_m       => SDO,
               SDO_s       => SDO,
               seg         => seg,
-              mux_disp    => mux_disp,
-              columna     => columna,
-              fila        => fila); 
+              mux_disp    => mux_disp); 
 
 process
 begin
 
     -- Inicializacion de los spies 
-    init_signal_spy("/test_top/dut/CS", "/nCSB");
+    init_signal_spy("/test_top/dut/nCS", "/nCS");
     init_signal_spy("/test_top/dut/info_disp", "/info_disp");
     init_signal_spy("/test_top/dut/reg_tx", "/reg_tx");
 
@@ -101,12 +99,11 @@ begin
   str_sgl_ins <= '0';
 
 -- CTRL_MS
-  
   set_modo_reg_op (tic_tecla, tecla, info_disp, clk);
   editar_reg_op (tic_tecla, tecla, info_disp, reg_tx, X"1234", clk);
   pulsar(tic_tecla, tecla, X"E" , clk);  --Escribir
 
-  wait until nCSB'event and nCSB = '1';
+  wait until nCS'event and nCS = '1';
   wait for 50* Tclk;
   wait until clk'event and clk = '1';
 
@@ -122,7 +119,7 @@ begin
 -- CTRL_MS
   pulsar(tic_tecla, tecla, X"F" , clk);  --Leer 
 
-  wait until nCSB'event and nCSB = '1';
+  wait until nCS'event and nCS = '1';
   wait for 50* Tclk;
   wait until clk'event and clk = '1';
 
@@ -139,9 +136,9 @@ begin
   set_modo_reg_conf (tic_tecla, tecla, info_disp, clk);
   editar_reg_conf (tic_tecla, tecla, info_disp, reg_tx, X"0", X"24", clk);
   pulsar(tic_tecla, tecla, X"E" , clk);  --Escribir
-  
-  wait until nCSB'event and nCSB = '1';
-  wait for 500* Tclk;
+
+  wait until nCS'event and nCS = '1';
+  wait for 50* Tclk;
   wait until clk'event and clk = '1';
 
   assert false
