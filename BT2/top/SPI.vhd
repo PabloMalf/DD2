@@ -47,6 +47,8 @@ begin
     ena_in        => ena_in,
     dato_out_reg  => dato_out_reg,
     dato_in_reg   => dato_in_reg,
+    nWR           => nWR,
+    adr_reg       => adr_reg,
     -- chequeo de consistencia
     modo_3_4_hilos => mode_3_4_h_slave,
     str_sgl_ins_slave => str_sgl_ins_slave,

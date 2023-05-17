@@ -56,26 +56,20 @@ architecture rtl of regs is
                     when "00000" => reg0 <= dato_in_reg;
                     when "00001" => reg1 <= dato_in_reg;
                     when "10000" => reg16 <= dato_in_reg;
-                    when others => reg17 <= dato_in_reg;
-                     
+                    when others => reg17 <= dato_in_reg;     
                 end case;
                 ena_out <= '0';
-
             elsif nWR='1' and ena_in='1' then  --  es decir, lectura
-
                 case adr_reg is
                     when "00000" => dato_reg <= reg0;
                     when "00001" => dato_reg <= reg1;
-
                     when "10000" => dato_reg <= reg16;
                     when "10001" => dato_reg <= reg17;
                     when others => dato_reg <= "XXXXXXXX";
                 end case;
                 ena_out <= '1';
             else 
-            
             ena_out <='0';
-
             end if;
         end if;
 
